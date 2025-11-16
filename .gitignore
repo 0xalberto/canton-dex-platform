@@ -8,17 +8,26 @@ target/
 __pycache__/
 *.egg-info/
 .venv/
+venv/
+dist/
+build/
+*.egg
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.iml
+.DS_Store
+.project
+.classpath
 
 # Environment
 .env
 .env.local
 .env.*.local
+.env.*.vault
 
 # OS
 .DS_Store
@@ -27,7 +36,76 @@ Thumbs.db
 # Logs
 logs/
 *.log
+*.log.*
 
 # Temporary
 tmp/
 temp/
+.tmp/
+
+# Docker
+.docker/
+docker.env
+docker-compose.override.yml
+
+# Kubernetes
+.kube/
+kubeconfig
+*.crt
+*.key
+*.pem
+
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfvars
+**/.terraform.lock.hcl
+**/*.tfplan
+
+# Prometheus/Monitoring
+prometheus_data/
+grafana_data/
+elasticsearch_data/
+
+# Test coverage
+.coverage
+htmlcov/
+*.lcov
+coverage/
+test-results/
+
+# Python
+.pytest_cache/
+.mypy_cache/
+.pytype/
+.hypothesis/
+*.pyo
+*.pyd
+.Python
+
+# Rust
+Cargo.lock
+/target/
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.eslintcache
+
+# Miscellaneous
+*.bak
+*.swp
+*.swo
+*~
+.#*
+*.tmp
+.vscode-test
+.DS_Store
+.AppleDouble
+.LSOverride
+dist/
+build/

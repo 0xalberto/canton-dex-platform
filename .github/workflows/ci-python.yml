@@ -1,0 +1,265 @@
+name: Python CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'cantondex-backend/api-gateway/**'
+      - 'cantondex-backend/compliance-service/**'
+      - 'cantondex-backend/risk-management/**'
+      - 'cantondex-backend/notification-service/**'
+      - 'cantondex-backend/settlement-coordinator/**'
+      - '.github/workflows/ci-python.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'cantondex-backend/api-gateway/**'
+      - 'cantondex-backend/compliance-service/**'
+      - 'cantondex-backend/risk-management/**'
+      - 'cantondex-backend/notification-service/**'
+      - 'cantondex-backend/settlement-coordinator/**'
+      - '.github/workflows/ci-python.yml'
+
+env:
+  PYTHON_VERSION: '3.11'
+  PIP_CACHE_DIR: ~/.cache/pip
+
+jobs:
+  lint-api-gateway:
+    name: Lint - API Gateway
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'cantondex-backend/api-gateway/requirements.txt'
+
+      - name: Install dependencies
+        working-directory: cantondex-backend/api-gateway
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pylint black isort
+
+      - name: Run Black formatting check
+        working-directory: cantondex-backend/api-gateway
+        run: black --check .
+
+      - name: Run isort import check
+        working-directory: cantondex-backend/api-gateway
+        run: isort --check-only .
+
+      - name: Run Flake8 linter
+        working-directory: cantondex-backend/api-gateway
+        run: flake8 . --max-line-length=120 --extend-ignore=E203,W503
+
+      - name: Run Pylint
+        working-directory: cantondex-backend/api-gateway
+        run: pylint **/*.py --disable=C0111,C0103,R0913,R0914 || true
+
+  test-api-gateway:
+    name: Test - API Gateway
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: cantondex_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'cantondex-backend/api-gateway/requirements.txt'
+
+      - name: Install dependencies
+        working-directory: cantondex-backend/api-gateway
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pytest
+        working-directory: cantondex-backend/api-gateway
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/cantondex_test
+          REDIS_URL: redis://localhost:6379/0
+        run: pytest --cov=. --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./cantondex-backend/api-gateway/coverage.xml
+          flags: api-gateway
+          fail_ci_if_error: false
+
+  security-scan:
+    name: Security Scan - Python Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety pip-audit
+
+      - name: Run Bandit security scan (API Gateway)
+        working-directory: cantondex-backend/api-gateway
+        run: bandit -r . -ll || true
+
+      - name: Run pip-audit
+        working-directory: cantondex-backend/api-gateway
+        run: pip-audit -r requirements.txt || true
+
+  build-api-gateway:
+    name: Build - API Gateway Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint-api-gateway, test-api-gateway, security-scan]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./cantondex-backend/api-gateway
+          push: false
+          tags: cantondex-api-gateway:${{ github.sha }}
+
+  lint-compliance-service:
+    name: Lint - Compliance Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: cantondex-backend/compliance-service
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort
+
+      - name: Run Black formatting check
+        working-directory: cantondex-backend/compliance-service
+        run: black --check . || true
+
+      - name: Run Flake8 linter
+        working-directory: cantondex-backend/compliance-service
+        run: flake8 . --max-line-length=120 || true
+
+  lint-risk-management:
+    name: Lint - Risk Management Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: cantondex-backend/risk-management
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort
+
+      - name: Run Black formatting check
+        working-directory: cantondex-backend/risk-management
+        run: black --check . || true
+
+      - name: Run Flake8 linter
+        working-directory: cantondex-backend/risk-management
+        run: flake8 . --max-line-length=120 || true
+
+  lint-notification-service:
+    name: Lint - Notification Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: cantondex-backend/notification-service
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort
+
+      - name: Run Black formatting check
+        working-directory: cantondex-backend/notification-service
+        run: black --check . || true
+
+      - name: Run Flake8 linter
+        working-directory: cantondex-backend/notification-service
+        run: flake8 . --max-line-length=120 || true
+
+  lint-settlement-coordinator:
+    name: Lint - Settlement Coordinator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: cantondex-backend/settlement-coordinator
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort
+
+      - name: Run Black formatting check
+        working-directory: cantondex-backend/settlement-coordinator
+        run: black --check . || true
+
+      - name: Run Flake8 linter
+        working-directory: cantondex-backend/settlement-coordinator
+        run: flake8 . --max-line-length=120 || true
