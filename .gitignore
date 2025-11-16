@@ -1,0 +1,33 @@
+# Build artifacts
+*.dar
+.daml/
+
+# Dependencies
+node_modules/
+target/
+__pycache__/
+*.egg-info/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary
+tmp/
+temp/
