@@ -1,0 +1,55 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport
+      [attr.role]="'navigation'"
+      mode="side"
+      opened>
+    <mat-toolbar color="primary" class="sidenav-toolbar">
+      <span class="logo">CantonDEX</span>
+      <span class="subtitle">Custody Portal</span>
+    </mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item
+         *ngFor="let item of menuItems"
+         [routerLink]="item.path"
+         routerLinkActive="active-link">
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle>{{ item.label }}</span>
+        <span matListItemMeta *ngIf="item.badge && (getBadgeCount(item.badge) | async) as count">
+          <span class="badge" *ngIf="count > 0">{{ count }}</span>
+        </span>
+      </a>
+    </mat-nav-list>
+
+    <div class="connection-status" [class.connected]="isConnected">
+      <mat-icon>{{ isConnected ? 'wifi' : 'wifi_off' }}</mat-icon>
+      <span>{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="top-toolbar">
+      <span class="toolbar-spacer"></span>
+
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" *ngIf="currentUser$ | async as user">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <div class="user-info" *ngIf="currentUser$ | async as user">
+          <div class="user-name">{{ user.name }}</div>
+          <div class="user-email">{{ user.email }}</div>
+          <div class="user-role">{{ user.role | titlecase }}</div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

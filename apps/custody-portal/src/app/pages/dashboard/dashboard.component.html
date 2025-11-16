@@ -1,0 +1,124 @@
+<div class="dashboard-container">
+  <h1 class="page-title">Dashboard</h1>
+
+  <div class="stats-grid" *ngIf="!loading">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Total Value</div>
+          <div class="stat-value">{{ (totalValue$ | async) || 0 | currency }}</div>
+          <div class="stat-change positive" *ngIf="stats?.change24h && stats.change24h > 0">
+            +{{ stats.change24h }}% (24h)
+          </div>
+          <div class="stat-change negative" *ngIf="stats?.change24h && stats.change24h < 0">
+            {{ stats.change24h }}% (24h)
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Total Assets</div>
+          <div class="stat-value">{{ stats?.totalAssets || 0 }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>pending_actions</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Active Transactions</div>
+          <div class="stat-value">{{ (activeTransactions$ | async) || 0 }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon warning">
+          <mat-icon>arrow_upward</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Pending Withdrawals</div>
+          <div class="stat-value">{{ (pendingWithdrawals$ | async) || 0 }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="activity-card" *ngIf="!loading">
+    <mat-card-header>
+      <mat-card-title>Recent Activity</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="recentActivity" class="activity-table">
+        <ng-container matColumnDef="assetSymbol">
+          <th mat-header-cell *matHeaderCellDef>Asset</th>
+          <td mat-cell *matCellDef="let tx">
+            <strong>{{ tx.assetSymbol }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let tx">
+            <div class="type-cell">
+              <mat-icon [class]="tx.type">{{ getTypeIcon(tx.type) }}</mat-icon>
+              <span>{{ tx.type | titlecase }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let tx">{{ tx.amount }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let tx">
+            <span class="status-badge" [class]="getStatusColor(tx.status)">
+              {{ tx.status | titlecase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let tx">{{ formatDate(tx.createdAt) }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">No recent activity</div>
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <mat-card class="error-card" *ngIf="error">
+    <mat-card-content>
+      <mat-icon>error</mat-icon>
+      <p>{{ error }}</p>
+    </mat-card-content>
+  </mat-card>
+</div>

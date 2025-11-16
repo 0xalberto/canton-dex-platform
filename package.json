@@ -1,0 +1,27 @@
+{
+  "name": "@cantondex/root",
+  "version": "1.0.0",
+  "description": "CantonDEX - Distributed Exchange Platform - Frontend Applications",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@8.12.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "test:unit": "pnpm -r run test:unit",
+    "test:integration": "pnpm -r run test:integration",
+    "test:e2e": "pnpm -r run test:e2e",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
+    "format": "pnpm -r run format",
+    "type-check": "pnpm -r run type-check",
+    "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf node_modules",
+    "install-all": "pnpm install"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "prettier": "^3.1.0",
+    "eslint": "^8.55.0"
+  }
+}
