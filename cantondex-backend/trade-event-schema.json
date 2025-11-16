@@ -1,0 +1,20 @@
+{
+  "namespace": "com.cantondex.events",
+  "type": "record",
+  "name": "TradeEvent",
+  "fields": [
+    {"name": "event_id", "type": "string"},
+    {"name": "event_type", "type": "string"},
+    {"name": "timestamp", "type": "long"},
+    {"name": "trade_id", "type": "string"},
+    {"name": "trading_pair", "type": "string"},
+    {"name": "buy_order_id", "type": "string"},
+    {"name": "sell_order_id", "type": "string"},
+    {"name": "buyer_account_id", "type": "string"},
+    {"name": "seller_account_id", "type": "string"},
+    {"name": "price", "type": "string"},
+    {"name": "quantity", "type": "string"},
+    {"name": "trade_timestamp", "type": "long"},
+    {"name": "settlement_required", "type": "boolean"}
+  ]
+}

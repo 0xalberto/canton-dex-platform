@@ -1,0 +1,20 @@
+{
+  "namespace": "com.cantondex.events",
+  "type": "record",
+  "name": "OrderEvent",
+  "fields": [
+    {"name": "event_id", "type": "string"},
+    {"name": "event_type", "type": {"type": "enum", "name": "EventType", "symbols": ["OrderCreated", "OrderCancelled", "OrderFilled", "OrderModified"]}},
+    {"name": "timestamp", "type": "long"},
+    {"name": "order_id", "type": "string"},
+    {"name": "account_id", "type": "string"},
+    {"name": "trading_pair", "type": "string"},
+    {"name": "side", "type": {"type": "enum", "name": "OrderSide", "symbols": ["Buy", "Sell"]}},
+    {"name": "order_type", "type": {"type": "enum", "name": "OrderType", "symbols": ["Limit", "Market", "Stop", "Iceberg"]}},
+    {"name": "price", "type": "string"},
+    {"name": "quantity", "type": "string"},
+    {"name": "filled_quantity", "type": "string"},
+    {"name": "status", "type": "string"},
+    {"name": "time_in_force", "type": "string"}
+  ]
+}
