@@ -1,0 +1,121 @@
+<div class="reconciliation-container">
+  <div class="page-header">
+    <h1 class="page-title">Reconciliation</h1>
+    <button mat-raised-button color="primary" (click)="createNewReport()">
+      <mat-icon>add</mat-icon>
+      New Report
+    </button>
+  </div>
+
+  <div *ngIf="!loading && reports.length > 0">
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let report of reports">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <div class="report-header">
+              <span class="report-date">{{ formatDate(report.startDate) }} - {{ formatDate(report.endDate) }}</span>
+              <mat-chip [class]="getStatusColor(report.status)">
+                {{ report.status | titlecase }}
+              </mat-chip>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="report-stats">
+              <span>{{ report.reconciledAssets }} / {{ report.totalAssets }} reconciled</span>
+              <span *ngIf="hasDiscrepancies(report)" class="discrepancy-count">
+                {{ getUnresolvedDiscrepancies(report).length }} discrepancies
+              </span>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="report-content">
+          <div *ngIf="!hasDiscrepancies(report)" class="no-discrepancies">
+            <mat-icon>check_circle</mat-icon>
+            <p>No discrepancies found. All assets are reconciled.</p>
+          </div>
+
+          <div *ngIf="hasDiscrepancies(report)">
+            <h3>Discrepancies</h3>
+            <table mat-table [dataSource]="report.discrepancies" class="discrepancies-table">
+              <ng-container matColumnDef="assetSymbol">
+                <th mat-header-cell *matHeaderCellDef>Asset</th>
+                <td mat-cell *matCellDef="let discrepancy">
+                  <strong>{{ discrepancy.assetSymbol }}</strong>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="expectedBalance">
+                <th mat-header-cell *matHeaderCellDef>Expected Balance</th>
+                <td mat-cell *matCellDef="let discrepancy">
+                  {{ discrepancy.expectedBalance }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actualBalance">
+                <th mat-header-cell *matHeaderCellDef>Actual Balance</th>
+                <td mat-cell *matCellDef="let discrepancy">
+                  {{ discrepancy.actualBalance }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="difference">
+                <th mat-header-cell *matHeaderCellDef>Difference</th>
+                <td mat-cell *matCellDef="let discrepancy">
+                  <span class="difference-value">{{ discrepancy.difference }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let discrepancy">
+                  <mat-chip [class]="discrepancy.resolved ? 'success' : 'warning'">
+                    {{ discrepancy.resolved ? 'Resolved' : 'Pending' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let discrepancy">
+                  <button mat-button color="primary" *ngIf="!discrepancy.resolved">
+                    Resolve
+                  </button>
+                  <span *ngIf="discrepancy.resolved && discrepancy.reason" class="reason">
+                    {{ discrepancy.reason }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <mat-card *ngIf="!loading && reports.length === 0" class="empty-state">
+    <mat-card-content>
+      <mat-icon>description</mat-icon>
+      <h2>No Reconciliation Reports</h2>
+      <p>Create your first reconciliation report to start tracking asset discrepancies.</p>
+      <button mat-raised-button color="primary" (click)="createNewReport()">
+        Create Report
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <mat-card class="error-card" *ngIf="error">
+    <mat-card-content>
+      <mat-icon>error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadReports()">Try Again</button>
+    </mat-card-content>
+  </mat-card>
+</div>

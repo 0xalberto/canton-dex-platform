@@ -1,0 +1,109 @@
+<div class="assets-container">
+  <div class="page-header">
+    <h1 class="page-title">Assets</h1>
+    <button mat-raised-button color="primary" (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  <mat-card *ngIf="!(loading$ | async) && !(error$ | async)">
+    <mat-card-content>
+      <table mat-table [dataSource]="(assets$ | async) || []" class="assets-table">
+        <ng-container matColumnDef="symbol">
+          <th mat-header-cell *matHeaderCellDef>Symbol</th>
+          <td mat-cell *matCellDef="let asset">
+            <div class="symbol-cell">
+              <div class="asset-icon">{{ asset.symbol.charAt(0) }}</div>
+              <strong>{{ asset.symbol }}</strong>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let asset">{{ asset.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="balance">
+          <th mat-header-cell *matHeaderCellDef>Total Balance</th>
+          <td mat-cell *matCellDef="let asset">
+            {{ formatBalance(asset.balance) }} {{ asset.symbol }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="available">
+          <th mat-header-cell *matHeaderCellDef>Available</th>
+          <td mat-cell *matCellDef="let asset">
+            {{ formatBalance(asset.availableBalance) }} {{ asset.symbol }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="locked">
+          <th mat-header-cell *matHeaderCellDef>Locked</th>
+          <td mat-cell *matCellDef="let asset">
+            <span [class.locked-balance]="parseFloat(asset.lockedBalance) > 0">
+              {{ formatBalance(asset.lockedBalance) }} {{ asset.symbol }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="usdValue">
+          <th mat-header-cell *matHeaderCellDef>USD Value</th>
+          <td mat-cell *matCellDef="let asset">
+            <strong>{{ formatCurrency(asset.usdValue) }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="change24h">
+          <th mat-header-cell *matHeaderCellDef>24h Change</th>
+          <td mat-cell *matCellDef="let asset">
+            <span class="change-badge" [class]="getChangeClass(asset.changePercent24h)">
+              {{ asset.changePercent24h > 0 ? '+' : '' }}{{ asset.changePercent24h.toFixed(2) }}%
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let asset">
+            <button mat-icon-button [matMenuTriggerFor]="assetMenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #assetMenu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>visibility</mat-icon>
+                <span>View Details</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>history</mat-icon>
+                <span>Transaction History</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">No assets found</div>
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="loading-container" *ngIf="loading$ | async">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <mat-card class="error-card" *ngIf="error$ | async as error">
+    <mat-card-content>
+      <mat-icon>error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="refresh()">Try Again</button>
+    </mat-card-content>
+  </mat-card>
+</div>

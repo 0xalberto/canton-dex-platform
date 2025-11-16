@@ -1,0 +1,133 @@
+.assets-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: #333;
+}
+
+.assets-table {
+  width: 100%;
+
+  th {
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 16px 8px;
+  }
+
+  .symbol-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .asset-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+    }
+  }
+
+  .locked-balance {
+    color: #ff9800;
+    font-weight: 500;
+  }
+
+  .change-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+
+    &.positive {
+      color: #2e7d32;
+      background-color: #e8f5e9;
+    }
+
+    &.negative {
+      color: #c62828;
+      background-color: #ffebee;
+    }
+
+    &.neutral {
+      color: #616161;
+      background-color: #e0e0e0;
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.error-card {
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px;
+    text-align: center;
+    color: #f44336;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .assets-table {
+    font-size: 12px;
+
+    td, th {
+      padding: 8px 4px;
+    }
+  }
+}

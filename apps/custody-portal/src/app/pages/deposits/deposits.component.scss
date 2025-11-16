@@ -1,0 +1,118 @@
+.deposits-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0;
+  color: #333;
+}
+
+.deposits-table {
+  width: 100%;
+
+  th {
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 16px 8px;
+  }
+
+  .address, .hash {
+    font-family: 'Courier New', monospace;
+    background-color: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  mat-chip {
+    &.success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    &.warning {
+      background-color: #fff3e0;
+      color: #ef6c00;
+    }
+
+    &.error {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    &.info {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    &.default {
+      background-color: #e0e0e0;
+      color: #616161;
+    }
+  }
+
+  .confirmations {
+    span {
+      font-weight: 500;
+
+      &.confirmed {
+        color: #4caf50;
+      }
+    }
+  }
+
+  mat-icon {
+    &.reconciled {
+      color: #4caf50;
+    }
+
+    &.pending-reconciliation {
+      color: #ff9800;
+    }
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .deposits-table {
+    font-size: 12px;
+
+    td, th {
+      padding: 8px 4px;
+    }
+  }
+}
