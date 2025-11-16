@@ -1,0 +1,221 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cantondex-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-cantondex}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpassword}
+      POSTGRES_DB: ${DB_NAME:-cantondex}
+      POSTGRES_INITDB_ARGS: "-c shared_preload_libraries=pg_stat_statements"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cantondex}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cantondex-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: cantondex-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devpassword}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cantondex-network
+
+  # Kafka Message Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: cantondex-kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    ports:
+      - "29092:29092"
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cantondex-network
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: cantondex-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cantondex-network
+
+  # API Gateway (Python/FastAPI)
+  api-gateway:
+    build:
+      context: ./cantondex-backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: cantondex-api-gateway
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-cantondex}:${DB_PASSWORD:-devpassword}@postgres:5432/${DB_NAME:-cantondex}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-devpassword}@redis:6379/0
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    volumes:
+      - ./cantondex-backend/api-gateway:/app
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - cantondex-network
+
+  # Matching Engine (Rust)
+  matching-engine:
+    build:
+      context: ./cantondex-backend/matching-engine
+      dockerfile: Dockerfile
+    container_name: cantondex-matching-engine
+    environment:
+      RUST_LOG: info
+    ports:
+      - "50051:50051"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50051/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - cantondex-network
+
+  # Compliance Service (Python)
+  compliance-service:
+    build:
+      context: ./cantondex-backend/compliance-service
+      dockerfile: Dockerfile
+    container_name: cantondex-compliance-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-cantondex}:${DB_PASSWORD:-devpassword}@postgres:5432/${DB_NAME:-cantondex}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    ports:
+      - "8001:50052"
+    networks:
+      - cantondex-network
+
+  # Risk Management Service (Python)
+  risk-management:
+    build:
+      context: ./cantondex-backend/risk-management
+      dockerfile: Dockerfile
+    container_name: cantondex-risk-management
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-cantondex}:${DB_PASSWORD:-devpassword}@postgres:5432/${DB_NAME:-cantondex}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-devpassword}@redis:6379/1
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    ports:
+      - "8002:8002"
+    networks:
+      - cantondex-network
+
+  # Settlement Coordinator (Python)
+  settlement-coordinator:
+    build:
+      context: ./cantondex-backend/settlement-coordinator
+      dockerfile: Dockerfile
+    container_name: cantondex-settlement-coordinator
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-cantondex}:${DB_PASSWORD:-devpassword}@postgres:5432/${DB_NAME:-cantondex}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    ports:
+      - "8003:8003"
+    networks:
+      - cantondex-network
+
+  # Notification Service (Python)
+  notification-service:
+    build:
+      context: ./cantondex-backend/notification-service
+      dockerfile: Dockerfile
+    container_name: cantondex-notification-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      ENVIRONMENT: development
+      LOG_LEVEL: debug
+    ports:
+      - "8004:8001"
+    networks:
+      - cantondex-network
+
+networks:
+  cantondex-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
