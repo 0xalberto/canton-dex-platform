@@ -1,0 +1,193 @@
+---
+# Service Accounts for IRSA (IAM Roles for Service Accounts)
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-gateway
+  namespace: cantondex
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/cantondex-api-gateway-sa
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: matching-engine
+  namespace: cantondex
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/cantondex-matching-engine-sa
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: settlement-coordinator
+  namespace: cantondex
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/cantondex-settlement-coordinator-sa
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: risk-management
+  namespace: cantondex
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/cantondex-risk-management-sa
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: notification-service
+  namespace: cantondex
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/cantondex-notification-service-sa
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: compliance-service
+  namespace: cantondex
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/cantondex-compliance-service-sa
+
+---
+# Pod Security Policy
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: cantondex-restricted
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'MustRunAs'
+    seLinuxOptions:
+      level: 's0:c123,c456'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  readOnlyRootFilesystem: false
+
+---
+# ClusterRole for pod security policy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: use-cantondex-psp
+rules:
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames: ['cantondex-restricted']
+
+---
+# ClusterRoleBinding for cantondex namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cantondex-use-psp
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: use-cantondex-psp
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: cantondex
+  - kind: ServiceAccount
+    name: api-gateway
+    namespace: cantondex
+  - kind: ServiceAccount
+    name: matching-engine
+    namespace: cantondex
+  - kind: ServiceAccount
+    name: settlement-coordinator
+    namespace: cantondex
+  - kind: ServiceAccount
+    name: risk-management
+    namespace: cantondex
+  - kind: ServiceAccount
+    name: notification-service
+    namespace: cantondex
+  - kind: ServiceAccount
+    name: compliance-service
+    namespace: cantondex
+
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cantondex-network-policy
+  namespace: cantondex
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: cantondex
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: cantondex-monitoring
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8001
+        - protocol: TCP
+          port: 8002
+        - protocol: TCP
+          port: 8003
+        - protocol: TCP
+          port: 8004
+        - protocol: TCP
+          port: 50051
+  egress:
+    - to:
+        - namespaceSelector: {}
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 9092
+        - protocol: TCP
+          port: 2181

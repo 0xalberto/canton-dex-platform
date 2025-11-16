@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cantondex
+
+commonLabels:
+  environment: staging
+  tier: staging
+
+commonAnnotations:
+  environment: staging
+  kustomization-overlay: staging
+
+bases:
+  - ../../base
+
+replicas:
+  - name: api-gateway
+    count: 2
+  - name: matching-engine
+    count: 2
+  - name: settlement-coordinator
+    count: 1
+  - name: risk-management
+    count: 1
+  - name: notification-service
+    count: 1
+  - name: compliance-service
+    count: 1
+
+images:
+  - name: DOCKER_REGISTRY/cantondex/api-gateway
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/api-gateway
+    newTag: staging-latest
+  - name: DOCKER_REGISTRY/cantondex/matching-engine
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/matching-engine
+    newTag: staging-latest
+  - name: DOCKER_REGISTRY/cantondex/settlement-coordinator
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/settlement-coordinator
+    newTag: staging-latest
+  - name: DOCKER_REGISTRY/cantondex/risk-management
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/risk-management
+    newTag: staging-latest
+  - name: DOCKER_REGISTRY/cantondex/notification-service
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/notification-service
+    newTag: staging-latest
+  - name: DOCKER_REGISTRY/cantondex/compliance-service
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/compliance-service
+    newTag: staging-latest
+
+configMapGenerator:
+  - name: cantondex-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=staging
+      - LOG_LEVEL=DEBUG
+
+secretGenerator:
+  - name: cantondex-secrets
+    behavior: merge
+    envs:
+      - secrets.env
