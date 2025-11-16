@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cantondex
+  labels:
+    name: cantondex
+    managed-by: terraform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cantondex-monitoring
+  labels:
+    name: cantondex-monitoring
+    managed-by: terraform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cantondex-security
+  labels:
+    name: cantondex-security
+    managed-by: terraform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cantondex-logging
+  labels:
+    name: cantondex-logging
+    managed-by: terraform

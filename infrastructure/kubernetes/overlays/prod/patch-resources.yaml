@@ -1,0 +1,113 @@
+---
+# API Gateway - Increase resources for production
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  template:
+    spec:
+      containers:
+      - name: api-gateway
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+
+---
+# Matching Engine - Increase resources for production
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matching-engine
+spec:
+  template:
+    spec:
+      containers:
+      - name: matching-engine
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "2000m"
+          limits:
+            memory: "4Gi"
+            cpu: "4000m"
+
+---
+# Settlement Coordinator - Increase resources for production
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: settlement-coordinator
+spec:
+  template:
+    spec:
+      containers:
+      - name: settlement-coordinator
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+
+---
+# Risk Management - Increase resources for production
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risk-management
+spec:
+  template:
+    spec:
+      containers:
+      - name: risk-management
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+
+---
+# Notification Service - Increase resources for production
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  template:
+    spec:
+      containers:
+      - name: notification-service
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+
+---
+# Compliance Service - Increase resources for production
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compliance-service
+spec:
+  template:
+    spec:
+      containers:
+      - name: compliance-service
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"

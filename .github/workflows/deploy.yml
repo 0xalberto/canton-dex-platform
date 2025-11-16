@@ -1,0 +1,152 @@
+name: Build, Push, and Deploy
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'cantondex-backend/**'
+      - 'infrastructure/**'
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - api-gateway
+          - matching-engine
+          - settlement-coordinator
+          - risk-management
+          - notification-service
+          - compliance-service
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./cantondex-backend
+          file: ./cantondex-backend/${{ matrix.service }}/Dockerfile
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: |
+          echo "Running tests..."
+          # Add actual test commands here
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.files, 'infrastructure/terraform')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive infrastructure/terraform/
+
+      - name: Terraform Validate
+        run: |
+          cd infrastructure/terraform
+          terraform init -backend=false
+          terraform validate
+
+      - name: Terraform Plan (Production)
+        run: |
+          cd infrastructure/terraform
+          terraform init -backend=false
+          terraform plan -var-file=environments/prod.tfvars -out=tfplan
+
+      - name: Comment PR with Plan
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('infrastructure/terraform/tfplan', 'utf-8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `\`\`\`\nTerraform Plan:\n${plan}\n\`\`\``
+            });
+
+  deploy:
+    needs: [build-and-push, test]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name cantondex-prod --region us-east-1
+
+      - name: Deploy to EKS (Production)
+        run: |
+          cd infrastructure/kubernetes
+          kustomize build overlays/prod | kubectl apply -f -
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/api-gateway -n cantondex --timeout=5m
+          kubectl rollout status deployment/matching-engine -n cantondex --timeout=5m
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests..."
+          kubectl run smoke-test --image=curlimages/curl --restart=Never -n cantondex -- \
+            curl -f http://api-gateway:8000/health || exit 1

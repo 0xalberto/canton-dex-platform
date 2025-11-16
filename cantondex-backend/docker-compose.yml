@@ -1,0 +1,231 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cantondex-postgres
+    environment:
+      POSTGRES_USER: cantondex
+      POSTGRES_PASSWORD: cantondex_dev
+      POSTGRES_DB: cantondex
+      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cantondex"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cantondex-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: cantondex-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cantondex-network
+
+  # Kafka (Zookeeper)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: cantondex-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - cantondex-network
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: cantondex-kafka
+    depends_on:
+      zookeeper:
+        condition: service_started
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+    networks:
+      - cantondex-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: cantondex-api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://cantondex:cantondex_dev@postgres:5432/cantondex
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      LOG_LEVEL: INFO
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./api-gateway:/app
+    networks:
+      - cantondex-network
+
+  # Matching Engine
+  matching-engine:
+    build:
+      context: .
+      dockerfile: matching-engine/Dockerfile
+    container_name: cantondex-matching-engine
+    ports:
+      - "50051:50051"
+    environment:
+      DATABASE_URL: postgresql://cantondex:cantondex_dev@postgres:5432/cantondex
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      LOG_LEVEL: INFO
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./matching-engine:/app
+    networks:
+      - cantondex-network
+
+  # Settlement Coordinator
+  settlement-coordinator:
+    build:
+      context: .
+      dockerfile: settlement-coordinator/Dockerfile
+    container_name: cantondex-settlement-coordinator
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://cantondex:cantondex_dev@postgres:5432/cantondex
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MATCHING_ENGINE_URL: grpc://matching-engine:50051
+      LOG_LEVEL: INFO
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./settlement-coordinator:/app
+    networks:
+      - cantondex-network
+
+  # Risk Management
+  risk-management:
+    build:
+      context: .
+      dockerfile: risk-management/Dockerfile
+    container_name: cantondex-risk-management
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: postgresql://cantondex:cantondex_dev@postgres:5432/cantondex
+      REDIS_URL: redis://redis:6379/1
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      LOG_LEVEL: INFO
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./risk-management:/app
+    networks:
+      - cantondex-network
+
+  # Notification Service
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: cantondex-notification-service
+    ports:
+      - "8003:8003"
+    environment:
+      DATABASE_URL: postgresql://cantondex:cantondex_dev@postgres:5432/cantondex
+      REDIS_URL: redis://redis:6379/2
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      LOG_LEVEL: INFO
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./notification-service:/app
+    networks:
+      - cantondex-network
+
+  # Compliance Service
+  compliance-service:
+    build:
+      context: .
+      dockerfile: compliance-service/Dockerfile
+    container_name: cantondex-compliance-service
+    ports:
+      - "8004:8004"
+    environment:
+      DATABASE_URL: postgresql://cantondex:cantondex_dev@postgres:5432/cantondex
+      REDIS_URL: redis://redis:6379/3
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      LOG_LEVEL: INFO
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    volumes:
+      - ./compliance-service:/app
+    networks:
+      - cantondex-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  cantondex-network:
+    driver: bridge

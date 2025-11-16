@@ -1,0 +1,106 @@
+---
+# AWS ALB Ingress for API Gateway
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway-ingress
+  namespace: cantondex
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERT_ID
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/subnets: subnet-xxxxx,subnet-yyyyy,subnet-zzzzz
+    alb.ingress.kubernetes.io/security-groups: sg-xxxxx
+spec:
+  rules:
+  - host: api.cantondex.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8000
+  - host: www.cantondex.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8000
+
+---
+# Ingress for internal services (optional, for development)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: internal-services-ingress
+  namespace: cantondex
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - internal.cantondex.example.com
+    secretName: internal-tls-cert
+  rules:
+  - host: internal.cantondex.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8000
+      - path: /matching-engine
+        pathType: Prefix
+        backend:
+          service:
+            name: matching-engine
+            port:
+              number: 50051
+      - path: /settlement
+        pathType: Prefix
+        backend:
+          service:
+            name: settlement-coordinator
+            port:
+              number: 8001
+      - path: /risk
+        pathType: Prefix
+        backend:
+          service:
+            name: risk-management
+            port:
+              number: 8002
+      - path: /notifications
+        pathType: Prefix
+        backend:
+          service:
+            name: notification-service
+            port:
+              number: 8003
+      - path: /compliance
+        pathType: Prefix
+        backend:
+          service:
+            name: compliance-service
+            port:
+              number: 8004

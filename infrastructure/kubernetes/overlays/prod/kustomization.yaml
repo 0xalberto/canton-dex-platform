@@ -1,0 +1,75 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cantondex
+
+commonLabels:
+  environment: production
+  tier: production
+
+commonAnnotations:
+  environment: production
+  kustomization-overlay: prod
+
+bases:
+  - ../../base
+
+replicas:
+  - name: api-gateway
+    count: 5
+  - name: matching-engine
+    count: 5
+  - name: settlement-coordinator
+    count: 3
+  - name: risk-management
+    count: 3
+  - name: notification-service
+    count: 3
+  - name: compliance-service
+    count: 3
+
+images:
+  - name: DOCKER_REGISTRY/cantondex/api-gateway
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/api-gateway
+    newTag: v1.0.0
+  - name: DOCKER_REGISTRY/cantondex/matching-engine
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/matching-engine
+    newTag: v1.0.0
+  - name: DOCKER_REGISTRY/cantondex/settlement-coordinator
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/settlement-coordinator
+    newTag: v1.0.0
+  - name: DOCKER_REGISTRY/cantondex/risk-management
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/risk-management
+    newTag: v1.0.0
+  - name: DOCKER_REGISTRY/cantondex/notification-service
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/notification-service
+    newTag: v1.0.0
+  - name: DOCKER_REGISTRY/cantondex/compliance-service
+    newName: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/cantondex/compliance-service
+    newTag: v1.0.0
+
+patchesStrategicMerge:
+  - patch-resources.yaml
+  - patch-replicas.yaml
+
+configMapGenerator:
+  - name: cantondex-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+
+secretGenerator:
+  - name: cantondex-secrets
+    behavior: merge
+    envs:
+      - secrets.env
+
+vars:
+  - name: DOCKER_REGISTRY
+    objref:
+      kind: ConfigMap
+      name: deployment-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.docker-registry

@@ -1,0 +1,114 @@
+---
+# API Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: cantondex
+  labels:
+    app: api-gateway
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: api-gateway
+
+---
+# Matching Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: matching-engine
+  namespace: cantondex
+  labels:
+    app: matching-engine
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless service for gRPC
+  ports:
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+    protocol: TCP
+  selector:
+    app: matching-engine
+
+---
+# Settlement Coordinator Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: settlement-coordinator
+  namespace: cantondex
+  labels:
+    app: settlement-coordinator
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  selector:
+    app: settlement-coordinator
+
+---
+# Risk Management Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: risk-management
+  namespace: cantondex
+  labels:
+    app: risk-management
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8002
+    targetPort: 8002
+    protocol: TCP
+  selector:
+    app: risk-management
+
+---
+# Notification Service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: cantondex
+  labels:
+    app: notification-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8003
+    targetPort: 8003
+    protocol: TCP
+  selector:
+    app: notification-service
+
+---
+# Compliance Service Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: compliance-service
+  namespace: cantondex
+  labels:
+    app: compliance-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8004
+    targetPort: 8004
+    protocol: TCP
+  selector:
+    app: compliance-service
