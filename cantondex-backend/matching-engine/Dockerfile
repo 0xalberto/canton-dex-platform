@@ -1,50 +1,46 @@
-# Build stage
-FROM rust:1.74-slim as builder
+# Multi-stage build for Rust Matching Engine
+FROM rust:1.75 as builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy manifest files
+COPY Cargo.toml Cargo.lock* ./
 
-# Copy Cargo files
-COPY matching-engine/Cargo.toml Cargo.lock ./
+# Create dummy main to cache dependencies
+RUN mkdir -p src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -rf src
 
 # Copy source code
-COPY matching-engine/src ./src
+COPY . .
 
 # Build the application
 RUN cargo build --release
 
-# Runtime stage
+# Final stage
 FROM debian:bookworm-slim
 
 WORKDIR /app
 
 # Install runtime dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    libssl3 \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN useradd -m -u 1000 cantondex
-
 # Copy binary from builder
-COPY --from=builder /app/target/release/matching-engine /app/matching-engine
-COPY --chown=cantondex:cantondex matching-engine/config /app/config
+COPY --from=builder /app/target/release/matching-engine /usr/local/bin/matching-engine
 
-USER cantondex
+# Create non-root user
+RUN useradd -m -u 1000 appuser
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/matching-engine --health || exit 1
 
 # Expose port
 EXPOSE 50051
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD grpcurl -plaintext localhost:50051 health.v1.Health/Check || exit 1
-
 # Run application
-CMD ["/app/matching-engine"]
+ENTRYPOINT ["matching-engine"]

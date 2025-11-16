@@ -1,0 +1,96 @@
+<div class="withdrawals-container">
+  <div class="page-header">
+    <h1 class="page-title">Withdrawals</h1>
+    <button mat-raised-button color="primary">
+      <mat-icon>add</mat-icon>
+      New Withdrawal
+    </button>
+  </div>
+
+  <mat-card *ngIf="!(loading$ | async)">
+    <mat-card-content>
+      <table mat-table [dataSource]="(withdrawals$ | async) || []" class="withdrawals-table">
+        <ng-container matColumnDef="asset">
+          <th mat-header-cell *matHeaderCellDef>Asset</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            <strong>{{ withdrawal.assetSymbol }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            {{ withdrawal.amount }} {{ withdrawal.assetSymbol }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="toAddress">
+          <th mat-header-cell *matHeaderCellDef>To Address</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            <code class="address">{{ truncateAddress(withdrawal.toAddress || '') }}</code>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            <mat-chip [class]="getStatusColor(withdrawal.status)">
+              {{ withdrawal.status | titlecase }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="approvals">
+          <th mat-header-cell *matHeaderCellDef>Approvals</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            <div class="approval-progress">
+              <span class="approval-count">
+                {{ withdrawal.approvals.length }} / {{ withdrawal.requiredApprovals }}
+              </span>
+              <mat-icon *ngIf="withdrawal.approvals.length >= withdrawal.requiredApprovals"
+                        class="approved-icon">
+                check_circle
+              </mat-icon>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            {{ formatDate(withdrawal.createdAt) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let withdrawal">
+            <button mat-raised-button
+                    color="primary"
+                    *ngIf="canApprove(withdrawal)"
+                    (click)="approve(withdrawal.id)">
+              <mat-icon>check</mat-icon>
+              Approve
+            </button>
+            <button mat-icon-button>
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">No withdrawals found</div>
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="loading-container" *ngIf="loading$ | async">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>
