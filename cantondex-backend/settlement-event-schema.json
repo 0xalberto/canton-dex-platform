@@ -1,0 +1,20 @@
+{
+  "namespace": "com.cantondex.events",
+  "type": "record",
+  "name": "SettlementEvent",
+  "fields": [
+    {"name": "event_id", "type": "string"},
+    {"name": "event_type", "type": {"type": "enum", "name": "SettlementEventType", "symbols": ["SettlementCreated", "SettlementExecuting", "SettlementCompleted", "SettlementFailed"]}},
+    {"name": "timestamp", "type": "long"},
+    {"name": "settlement_id", "type": "string"},
+    {"name": "trade_id", "type": "string"},
+    {"name": "buyer_account_id", "type": "string"},
+    {"name": "seller_account_id", "type": "string"},
+    {"name": "asset", "type": "string"},
+    {"name": "asset_quantity", "type": "string"},
+    {"name": "payment_amount", "type": "string"},
+    {"name": "domain_id", "type": "string"},
+    {"name": "status", "type": "string"},
+    {"name": "canton_contract_id", "type": ["null", "string"], "default": null}
+  ]
+}
