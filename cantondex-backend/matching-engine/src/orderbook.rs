@@ -1,12 +1,12 @@
 use std::collections::BTreeMap;
 use dashmap::DashMap;
 use parking_lot::RwLock;
-use std::sync::Arc;
+
 use uuid::Uuid;
 use chrono::Utc;
 
 use crate::types::{
-    Order, OrderBook, OrderSide, OrderStatus, OrderType, PriceLevel, TimeInForce, Trade, TradingPair, Decimal,
+    Order, OrderBook, OrderSide, OrderStatus, PriceLevel, Trade, TradingPair, Decimal,
 };
 
 /// Matching engine for a single trading pair
@@ -72,7 +72,7 @@ impl OrderBookEngine {
                 break;
             }
             
-            if let Some((_, mut sell_order)) = asks.remove(&key) {
+            if let Some(mut sell_order) = asks.remove(&key) {
                 let match_qty = if sell_order.remaining_quantity() <= remaining_qty {
                     sell_order.remaining_quantity()
                 } else {
@@ -124,7 +124,7 @@ impl OrderBookEngine {
                 break;
             }
             
-            if let Some((_, mut buy_order)) = bids.remove(&key) {
+            if let Some(mut buy_order) = bids.remove(&key) {
                 let match_qty = if buy_order.remaining_quantity() <= remaining_qty {
                     buy_order.remaining_quantity()
                 } else {
@@ -162,7 +162,7 @@ impl OrderBookEngine {
     
     /// Insert order into order book
     fn insert_order(&self, order: Order) {
-        let key = match order.side {
+        let _key = match order.side {
             OrderSide::Buy => {
                 // For bids, use reverse price ordering (highest first)
                 let mut bids = self.bids.write();
