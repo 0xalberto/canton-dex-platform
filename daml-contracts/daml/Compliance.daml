@@ -1,0 +1,40 @@
+-- Compliance Template
+-- KYC/AML verification and compliance status
+
+module Compliance where
+
+template Compliance
+  with
+    officer : Party
+    trader : Party
+    accountId : Text
+    kycStatus : Text  -- "pending", "approved", "rejected"
+    kycTier : Text  -- "tier_0", "tier_1", "tier_2", "tier_3"
+    riskLevel : Text  -- "low", "medium", "high"
+    lastVerifiedDate : Date
+    observers : [Party]
+  where
+    signatory officer
+    observer trader :: observers
+
+    -- Update KYC status
+    choice UpdateKYCStatus : ContractId Compliance
+      with
+        newStatus : Text
+        newTier : Text
+      controller officer
+      do
+        create this with
+          kycStatus = newStatus
+          kycTier = newTier
+
+    -- Update risk assessment
+    choice UpdateRiskLevel : ContractId Compliance
+      with
+        newRiskLevel : Text
+        verificationDate : Date
+      controller officer
+      do
+        create this with
+          riskLevel = newRiskLevel
+          lastVerifiedDate = verificationDate

@@ -1,0 +1,17 @@
+sdk-version: 2.9.0
+name: cantondex-contracts
+version: 1.0.0
+source: daml
+init-script: Main:setup
+parties:
+  - Alice
+  - Bob
+  - Securities-Issuer
+  - Cash-Provider
+  - Compliance-Officer
+  - Risk-Manager
+dependencies:
+  - daml-prim
+  - daml-stdlib
+build-options:
+  - --target=2.1

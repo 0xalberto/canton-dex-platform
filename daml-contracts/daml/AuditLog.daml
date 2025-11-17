@@ -1,0 +1,45 @@
+-- AuditLog Template
+-- Immutable audit trail for compliance
+
+module AuditLog where
+
+template AuditLog
+  with
+    logId : Text
+    eventType : Text  -- "order_placed", "trade_executed", "settlement_completed"
+    actor : Party
+    accountId : Text
+    eventDetails : Text  -- JSON string with event data
+    timestamp : Time
+    observers : [Party]
+  where
+    signatory actor
+    observer observers
+
+    -- Immutable - no modification choices allowed
+    -- Only reading is permitted
+
+-- Compliance Alert Log
+template ComplianceAlertLog
+  with
+    alertId : Text
+    alertType : Text  -- "suspicious_transaction", "large_order", "unusual_pattern"
+    accountId : Text
+    description : Text
+    severity : Text  -- "low", "medium", "high", "critical"
+    status : Text  -- "open", "investigating", "resolved", "false_positive"
+    createdAt : Time
+    complianceOfficer : Party
+    observers : [Party]
+  where
+    signatory complianceOfficer
+    observer observers
+
+    -- Update alert status
+    choice UpdateAlertStatus : ContractId ComplianceAlertLog
+      with
+        newStatus : Text
+        resolution : Text
+      controller complianceOfficer
+      do
+        create this with status = newStatus

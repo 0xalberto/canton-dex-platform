@@ -1,130 +1,172 @@
-import { useEffect } from 'react'
-import { useAccountStore } from '@store/accountStore'
-import { useOrderStore } from '@store/orderStore'
-import { useMarketStore } from '@store/marketStore'
-import { accountService } from '@services/accountService'
-import { orderService } from '@services/orderService'
-import { marketService } from '@services/marketService'
+import { useEffect, useState } from 'react';
+
+interface StatCard {
+  title: string;
+  value: string;
+  change: string;
+  trend: 'up' | 'down';
+  icon: string;
+}
 
 export default function Dashboard() {
-  const account = useAccountStore((state) => state.account)
-  const assets = useAccountStore((state) => state.assets)
-  const orders = useOrderStore((state) => state.orders)
-  const trades = useOrderStore((state) => state.trades)
+  const [stats, setStats] = useState<StatCard[]>([
+    { title: 'Total Volume', value: '$12.5M', change: '+15.3%', trend: 'up', icon: '📊' },
+    { title: 'Active Orders', value: '24', change: '+8', trend: 'up', icon: '📝' },
+    { title: 'Portfolio Value', value: '$845K', change: '+12.7%', trend: 'up', icon: '💼' },
+    { title: 'P&L Today', value: '+$23.4K', change: '+5.2%', trend: 'up', icon: '💰' },
+  ]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [accountData, assetsData, openOrders, tradesData, pairs] = await Promise.all([
-          accountService.getAccount(),
-          accountService.getAssets(),
-          orderService.getOpenOrders(),
-          orderService.getTrades(undefined, 10, 0),
-          marketService.getMarketPairs(),
-        ])
-
-        useAccountStore.setState({ account: accountData, assets: assetsData })
-        useOrderStore.setState({ orders: openOrders, trades: tradesData.data })
-        useMarketStore.setState({ pairs })
-      } catch (error) {
-        console.error('Failed to load dashboard data:', error)
-      }
-    }
-
-    loadData()
-  }, [])
-
-  const totalPortfolioValue = assets.reduce((sum, asset) => sum + asset.valueUsd, 0)
+  const recentTrades = [
+    { pair: 'BTC/USDT', side: 'BUY', price: '45,234', amount: '0.5', time: '2m ago', status: 'filled' },
+    { pair: 'ETH/USDT', side: 'SELL', price: '2,834', amount: '2.0', time: '5m ago', status: 'filled' },
+    { pair: 'SOL/USDT', side: 'BUY', price: '108.5', amount: '10', time: '8m ago', status: 'pending' },
+  ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="p-6 space-y-6 fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold gradient-text">Trading Dashboard</h1>
+          <p className="text-gray-400 mt-1">Welcome back, ready to trade?</p>
+        </div>
+        <button className="btn btn-primary">
+          <span className="mr-2">+</span> New Order
+        </button>
+      </div>
 
-      {/* Portfolio Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="card">
-          <p className="text-sm text-gray-400">Portfolio Value</p>
-          <p className="text-2xl font-bold">${totalPortfolioValue.toFixed(2)}</p>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, idx) => (
+          <div
+            key={idx}
+            className="glass-card card-3d"
+            style={{ animationDelay: `${idx * 0.1}s` }}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="text-4xl">{stat.icon}</div>
+              <span className={`badge ${stat.trend === 'up' ? 'badge-success' : 'badge-danger'}`}>
+                {stat.change}
+              </span>
+            </div>
+            <h3 className="text-gray-400 text-sm mb-1">{stat.title}</h3>
+            <p className="text-2xl font-bold">{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chart */}
+        <div className="lg:col-span-2 chart-container" style={{ height: '400px' }}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Price Chart</h2>
+            <div className="flex gap-2">
+              {['1H', '1D', '1W', '1M'].map((tf) => (
+                <button
+                  key={tf}
+                  className="px-3 py-1 rounded-lg glass text-sm hover:bg-primary/20 transition-all"
+                >
+                  {tf}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-6xl mb-4">📈</div>
+              <p className="text-gray-400">Interactive chart will render here</p>
+              <p className="text-sm text-gray-500 mt-2">Using lightweight-charts library</p>
+            </div>
+          </div>
         </div>
-        <div className="card">
-          <p className="text-sm text-gray-400">24h Change</p>
-          <p className="text-2xl font-bold text-success-500">+2.45%</p>
-        </div>
-        <div className="card">
-          <p className="text-sm text-gray-400">Open Orders</p>
-          <p className="text-2xl font-bold">{orders.length}</p>
-        </div>
-        <div className="card">
-          <p className="text-sm text-gray-400">Total Trades</p>
-          <p className="text-2xl font-bold">{trades.length}</p>
+
+        {/* Order Book Preview */}
+        <div className="glass-card">
+          <h2 className="text-xl font-semibold mb-4">Order Book</h2>
+          <div className="space-y-2">
+            {/* Asks */}
+            <div className="space-y-1">
+              {[
+                { price: '45,250', amount: '0.234', total: '10,596' },
+                { price: '45,245', amount: '0.456', total: '20,632' },
+                { price: '45,240', amount: '0.789', total: '35,694' },
+              ].map((order, idx) => (
+                <div key={idx} className="flex justify-between text-sm py-1 px-2 rounded hover:bg-red-500/10 transition-all">
+                  <span className="text-red-400">{order.price}</span>
+                  <span className="text-gray-400">{order.amount}</span>
+                  <span className="text-gray-500">{order.total}</span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Spread */}
+            <div className="py-2 px-3 glass rounded-lg text-center">
+              <span className="text-green-400 font-semibold">45,235.00</span>
+              <span className="text-gray-500 text-xs ml-2">Spread: 0.03%</span>
+            </div>
+            
+            {/* Bids */}
+            <div className="space-y-1">
+              {[
+                { price: '45,230', amount: '0.567', total: '25,635' },
+                { price: '45,225', amount: '0.890', total: '40,250' },
+                { price: '45,220', amount: '1.234', total: '55,821' },
+              ].map((order, idx) => (
+                <div key={idx} className="flex justify-between text-sm py-1 px-2 rounded hover:bg-green-500/10 transition-all">
+                  <span className="text-green-400">{order.price}</span>
+                  <span className="text-gray-400">{order.amount}</span>
+                  <span className="text-gray-500">{order.total}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Assets Overview */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="text-xl font-semibold">Assets</h2>
+      {/* Recent Trades */}
+      <div className="glass-card">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Recent Trades</h2>
+          <button className="text-primary-light text-sm hover:text-primary transition-colors">
+            View All →
+          </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-dark-700">
+          <table className="table-modern">
+            <thead>
               <tr>
-                <th className="text-left py-2">Asset</th>
-                <th className="text-right py-2">Balance</th>
-                <th className="text-right py-2">Locked</th>
-                <th className="text-right py-2">Value USD</th>
+                <th>Pair</th>
+                <th>Side</th>
+                <th>Price</th>
+                <th>Amount</th>
+                <th>Time</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {assets.slice(0, 5).map((asset) => (
-                <tr key={asset.symbol} className="border-b border-dark-700">
-                  <td className="py-2">{asset.symbol}</td>
-                  <td className="text-right">{asset.balance.toFixed(8)}</td>
-                  <td className="text-right">{asset.locked.toFixed(8)}</td>
-                  <td className="text-right">${asset.valueUsd.toFixed(2)}</td>
+              {recentTrades.map((trade, idx) => (
+                <tr key={idx}>
+                  <td className="font-semibold">{trade.pair}</td>
+                  <td>
+                    <span className={`badge ${trade.side === 'BUY' ? 'badge-success' : 'badge-danger'}`}>
+                      {trade.side}
+                    </span>
+                  </td>
+                  <td className="font-mono">${trade.price}</td>
+                  <td className="font-mono">{trade.amount}</td>
+                  <td className="text-gray-400 text-sm">{trade.time}</td>
+                  <td>
+                    <span className={`badge ${trade.status === 'filled' ? 'badge-success' : 'badge-warning'}`}>
+                      {trade.status}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* Open Orders */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="text-xl font-semibold">Open Orders</h2>
-        </div>
-        {orders.length === 0 ? (
-          <p className="text-gray-400">No open orders</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b border-dark-700">
-                <tr>
-                  <th className="text-left py-2">Pair</th>
-                  <th className="text-left py-2">Side</th>
-                  <th className="text-right py-2">Quantity</th>
-                  <th className="text-right py-2">Price</th>
-                  <th className="text-left py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.slice(0, 5).map((order) => (
-                  <tr key={order.id} className="border-b border-dark-700">
-                    <td className="py-2">{order.pair}</td>
-                    <td className={order.side === 'buy' ? 'text-success-500' : 'text-danger-500'}>
-                      {order.side.toUpperCase()}
-                    </td>
-                    <td className="text-right">{order.quantity}</td>
-                    <td className="text-right">${order.price?.toFixed(2) || 'Market'}</td>
-                    <td className="text-left">{order.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
     </div>
-  )
+  );
 }

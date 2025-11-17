@@ -1,7 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
-@use '@angular/material' as mat;
+/* Modern Custody Portal - Minimalist & 3D Design */
 
-/* Global styles */
 * {
   margin: 0;
   padding: 0;
@@ -15,25 +13,137 @@ html, body {
 
 body {
   margin: 0;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  color: #f8fafc;
 }
 
-/* Material Design theme customization */
-$primary-palette: mat.define-palette(mat.$indigo-palette);
-$accent-palette: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-$warn-palette: mat.define-palette(mat.$red-palette);
+/* Animated Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+  animation: gradient-shift 15s ease infinite;
+  z-index: -1;
+}
 
-$theme: mat.define-light-theme((
-  color: (
-    primary: $primary-palette,
-    accent: $accent-palette,
-    warn: $warn-palette,
-  ),
-  typography: mat.define-typography-config(),
-  density: 0,
-));
+@keyframes gradient-shift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
 
-@include mat.all-component-themes($theme);
+/* Material overrides */
+.mat-mdc-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s !important;
+}
+
+.mat-mdc-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+}
+
+.mat-toolbar {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.mat-drawer {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.mat-mdc-raised-button {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-raised-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6) !important;
+}
+
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-header-row {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.mat-mdc-row:hover {
+  background: rgba(99, 102, 241, 0.1) !important;
+  transform: scale(1.01);
+  transition: all 0.3s;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+.status-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8, #8b5cf6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -42,16 +152,17 @@ $theme: mat.define-light-theme((
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: linear-gradient(135deg, #818cf8, #8b5cf6);
 }
 
 /* Utility classes */
@@ -61,10 +172,6 @@ $theme: mat.define-light-theme((
 
 .text-center {
   text-align: center;
-}
-
-.text-right {
-  text-align: right;
 }
 
 .mt-1 { margin-top: 8px; }
@@ -77,125 +184,7 @@ $theme: mat.define-light-theme((
 .mb-3 { margin-bottom: 24px; }
 .mb-4 { margin-bottom: 32px; }
 
-.ml-1 { margin-left: 8px; }
-.ml-2 { margin-left: 16px; }
-.ml-3 { margin-left: 24px; }
-.ml-4 { margin-left: 32px; }
-
-.mr-1 { margin-right: 8px; }
-.mr-2 { margin-right: 16px; }
-.mr-3 { margin-right: 24px; }
-.mr-4 { margin-right: 32px; }
-
 .p-1 { padding: 8px; }
 .p-2 { padding: 16px; }
 .p-3 { padding: 24px; }
 .p-4 { padding: 32px; }
-
-/* Material overrides */
-.mat-mdc-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  border-radius: 8px !important;
-}
-
-.mat-mdc-raised-button {
-  border-radius: 8px !important;
-}
-
-.mat-mdc-table {
-  background-color: transparent !important;
-}
-
-.mat-mdc-header-row {
-  background-color: #fafafa;
-}
-
-.mat-mdc-row:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-/* Custom classes for status badges */
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-success {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.status-warning {
-  background-color: #fff3e0;
-  color: #ef6c00;
-}
-
-.status-error {
-  background-color: #ffebee;
-  color: #c62828;
-}
-
-.status-info {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.status-default {
-  background-color: #e0e0e0;
-  color: #616161;
-}
-
-/* Loading states */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-/* Animation classes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Responsive helpers */
-@media (max-width: 768px) {
-  .hide-mobile {
-    display: none !important;
-  }
-}
-
-@media (min-width: 769px) {
-  .hide-desktop {
-    display: none !important;
-  }
-}
-
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}

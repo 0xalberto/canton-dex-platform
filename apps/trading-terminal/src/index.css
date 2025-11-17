@@ -1,81 +1,311 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-@layer base {
-  body {
-    @apply bg-dark-900 text-gray-100;
+/* Modern Color Palette */
+:root {
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --secondary: #8b5cf6;
+  --accent: #06b6d4;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --dark: #0f172a;
+  --dark-light: #1e293b;
+  --dark-lighter: #334155;
+  --light: #f8fafc;
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  color: #f8fafc;
+  overflow-x: hidden;
+}
+
+/* Animated Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+  animation: gradient-shift 15s ease infinite;
+  z-index: -1;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+/* Glass Morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+  @apply glass rounded-2xl p-6 transition-all duration-300;
+  transform: translateZ(0);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* 3D Button Styles */
+.btn {
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+  transform: translateZ(0);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* Input Styles */
+.input-modern {
+  @apply glass rounded-xl px-4 py-3 w-full text-white placeholder-gray-400;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.input-modern:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Card Hover Effect */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-3d:hover {
+  transform: rotateY(5deg) rotateX(5deg);
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
   }
-
-  button {
-    @apply transition-colors duration-200;
-  }
-
-  input,
-  select,
-  textarea {
-    @apply transition-colors duration-200;
+  50% {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.8);
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
-  }
-
-  .btn-secondary {
-    @apply px-4 py-2 bg-dark-700 text-gray-100 rounded-md hover:bg-dark-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
-  }
-
-  .btn-danger {
-    @apply px-4 py-2 bg-danger-600 text-white rounded-md hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
-  }
-
-  .btn-success {
-    @apply px-4 py-2 bg-success-600 text-white rounded-md hover:bg-success-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
-  }
-
-  .input-base {
-    @apply w-full px-3 py-2 bg-dark-800 text-gray-100 border border-dark-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500;
-  }
-
-  .card {
-    @apply bg-dark-800 border border-dark-700 rounded-lg p-4;
-  }
-
-  .card-header {
-    @apply border-b border-dark-700 pb-3 mb-3;
-  }
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Scrollbar styling */
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Status Badges */
+.badge {
+  @apply px-3 py-1 rounded-full text-xs font-semibold;
+  backdrop-filter: blur(10px);
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Chart Container */
+.chart-container {
+  @apply glass-card;
+  position: relative;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+/* Sidebar */
+.sidebar {
+  @apply glass;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Navbar */
+.navbar {
+  @apply glass;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-dark-800;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-dark-600 rounded hover:bg-dark-500;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 10px;
 }
 
-/* Trading terminal specific */
-.orderbook {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary));
 }
 
-.price-up {
-  @apply text-success-500;
+/* Loading Spinner */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.price-down {
-  @apply text-danger-500;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.depth-bar {
-  @apply h-full bg-gradient-to-r opacity-20 rounded-sm;
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Table Styles */
+.table-modern {
+  @apply w-full;
+}
+
+.table-modern thead {
+  @apply glass;
+  border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+}
+
+.table-modern th {
+  @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider;
+  color: var(--primary-light);
+}
+
+.table-modern td {
+  @apply px-4 py-3 border-t border-gray-700/30;
+}
+
+.table-modern tbody tr {
+  transition: all 0.3s;
+}
+
+.table-modern tbody tr:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: scale(1.01);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .glass-card {
+    padding: 1rem;
+  }
+  
+  .btn {
+    @apply px-4 py-2 text-sm;
+  }
 }

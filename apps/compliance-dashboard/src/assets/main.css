@@ -1,0 +1,216 @@
+/* Modern Compliance Dashboard - HIGH CONTRAST */
+:root {
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --secondary: #8b5cf6;
+  --accent: #06b6d4;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%) !important;
+  color: #ffffff !important;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+  animation: gradient-shift 15s ease infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+/* HIGH CONTRAST OVERRIDES */
+.v-application { 
+  background: transparent !important; 
+  color: #ffffff !important;
+}
+
+.v-navigation-drawer {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.v-app-bar {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.v-toolbar-title {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+}
+
+.v-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s !important;
+  color: #ffffff !important;
+}
+
+.v-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6) !important;
+  border-color: rgba(99, 102, 241, 0.5) !important;
+}
+
+.v-card-title {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.v-card-text {
+  color: #e2e8f0 !important;
+}
+
+.v-list-item {
+  color: #e2e8f0 !important;
+}
+
+.v-list-item:hover {
+  background: rgba(99, 102, 241, 0.2) !important;
+}
+
+.v-list-item--active {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), transparent) !important;
+  border-left: 3px solid var(--primary);
+  color: #ffffff !important;
+}
+
+.v-list-item-title {
+  color: inherit !important;
+  font-weight: 500 !important;
+}
+
+.v-btn {
+  text-transform: none !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.v-btn--elevated {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.v-btn--elevated:hover {
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6) !important;
+}
+
+.v-table {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+.v-table__wrapper {
+  background: rgba(30, 41, 59, 0.6) !important;
+}
+
+.v-data-table-header {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+th {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+td {
+  color: #e2e8f0 !important;
+}
+
+.v-data-table__tr:hover {
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Text overrides */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+}
+
+p {
+  color: #e2e8f0 !important;
+}
+
+/* Status badges */
+.badge {
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-success, .status-success {
+  background: rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.badge-danger, .status-error {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.badge-warning, .status-warning {
+  background: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #a5b4fc, #c4b5fd, #67e8f9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Icon colors */
+.v-icon {
+  color: #e2e8f0 !important;
+}
+
+.v-list-item--active .v-icon {
+  color: #ffffff !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #818cf8, #a78bfa);
+}

@@ -12,6 +12,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 // Tailwind CSS
 import './index.css'
+import './assets/main.css'
 
 const vuetify = createVuetify({
   components,

@@ -1,0 +1,45 @@
+-- RiskLimit Template
+-- Enforces risk limits per trader/account
+
+module RiskLimit where
+
+template RiskLimit
+  with
+    manager : Party
+    trader : Party
+    accountId : Text
+    maxPositionSize : Decimal
+    maxDailyLoss : Decimal
+    concentrationLimit : Decimal  -- e.g., 0.2 for 20% max per symbol
+    observers : [Party]
+  where
+    signatory manager
+    observer trader :: observers
+
+    -- Ensure valid risk limits
+    ensure maxPositionSize > 0.0 && 
+           maxDailyLoss > 0.0 && 
+           concentrationLimit > 0.0 && concentrationLimit <= 1.0
+
+    -- Update risk limits
+    choice UpdateRiskLimits : ContractId RiskLimit
+      with
+        newMaxPositionSize : Decimal
+        newMaxDailyLoss : Decimal
+        newConcentrationLimit : Decimal
+      controller manager
+      do
+        create this with
+          maxPositionSize = newMaxPositionSize
+          maxDailyLoss = newMaxDailyLoss
+          concentrationLimit = newConcentrationLimit
+
+    -- Check if order exceeds risk limits
+    choice CheckOrderRisk : Bool
+      with
+        orderSize : Decimal
+        currentPositionSize : Decimal
+      controller manager
+      do
+        let newPositionSize = currentPositionSize + orderSize
+        return (newPositionSize <= maxPositionSize)

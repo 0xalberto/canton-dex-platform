@@ -1,0 +1,83 @@
+-- CantonDEX Main Module
+-- Privacy-preserving institutional trading platform
+
+module Main where
+
+import Daml.Script
+
+-- Import all contract templates
+import Order
+import Trade
+import Settlement
+import Asset
+import Account
+import Margin
+import Compliance
+import RiskLimit
+import CustodyBridge
+import AuditLog
+
+-- Setup script for development
+setup : Script ()
+setup = do
+  -- Create parties
+  alice <- allocatePartyWithHint "Alice" (PartyIdHint "Alice")
+  bob <- allocatePartyWithHint "Bob" (PartyIdHint "Bob")
+  securitiesIssuer <- allocatePartyWithHint "Securities-Issuer" (PartyIdHint "SecuritiesIssuer")
+  cashProvider <- allocatePartyWithHint "Cash-Provider" (PartyIdHint "CashProvider")
+  complianceOfficer <- allocatePartyWithHint "Compliance-Officer" (PartyIdHint "ComplianceOfficer")
+  riskManager <- allocatePartyWithHint "Risk-Manager" (PartyIdHint "RiskManager")
+
+  -- Create accounts for Alice and Bob
+  aliceAccountCid <- submit alice do
+    createCmd Account with
+      owner = alice
+      accountId = "acc_alice_001"
+      accountType = "spot"
+      cashBalance = 100000.0
+      reservedBalance = 0.0
+      observers = [complianceOfficer, riskManager]
+
+  bobAccountCid <- submit bob do
+    createCmd Account with
+      owner = bob
+      accountId = "acc_bob_001"
+      accountType = "spot"
+      cashBalance = 50000.0
+      reservedBalance = 0.0
+      observers = [complianceOfficer, riskManager]
+
+  -- Create sample assets
+  appleAssetCid <- submit securitiesIssuer do
+    createCmd Asset with
+      issuer = securitiesIssuer
+      symbol = "AAPL/USDC"
+      name = "Apple Inc."
+      assetType = "equity"
+      currentPrice = 150.50
+      observers = [alice, bob, complianceOfficer]
+
+  -- Create compliance verification for Alice
+  aliceComplianceCid <- submit complianceOfficer do
+    createCmd Compliance with
+      officer = complianceOfficer
+      trader = alice
+      accountId = "acc_alice_001"
+      kycStatus = "approved"
+      kycTier = "tier_2"
+      riskLevel = "low"
+      lastVerifiedDate = date 2024 Nov 17
+      observers = [alice, riskManager]
+
+  -- Create risk limits
+  aliceRiskLimitCid <- submit riskManager do
+    createCmd RiskLimit with
+      manager = riskManager
+      trader = alice
+      accountId = "acc_alice_001"
+      maxPositionSize = 500000.0
+      maxDailyLoss = 10000.0
+      concentrationLimit = 0.2
+      observers = [alice, complianceOfficer]
+
+  return ()

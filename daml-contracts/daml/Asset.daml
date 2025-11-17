@@ -1,0 +1,28 @@
+-- Asset Template
+-- Represents a tradable asset (security, crypto, commodity)
+
+module Asset where
+
+template Asset
+  with
+    issuer : Party
+    symbol : Text
+    name : Text
+    assetType : Text  -- "equity", "crypto", "commodity"
+    currentPrice : Decimal
+    observers : [Party]
+  where
+    signatory issuer
+    observer observers
+
+    -- Ensure valid asset parameters
+    ensure currentPrice >= 0.0
+
+    -- Update asset price
+    choice UpdatePrice : ContractId Asset
+      with
+        newPrice : Decimal
+      controller issuer
+      do
+        assertMsg "Price must be non-negative" (newPrice >= 0.0)
+        create this with currentPrice = newPrice

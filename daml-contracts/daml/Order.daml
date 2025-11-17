@@ -1,0 +1,49 @@
+-- Order Template
+-- Represents a trading order (encrypted in production)
+
+module Order where
+
+import Account
+
+template Order
+  with
+    orderId : Text
+    trader : Party
+    accountId : Text
+    symbol : Text
+    side : Text  -- "buy" or "sell"
+    orderType : Text  -- "limit", "market", "stop"
+    quantity : Decimal
+    price : Decimal
+    timeInForce : Text  -- "gtc", "ioc", "fok"
+    status : Text  -- "pending", "filled", "cancelled"
+    filled : Decimal
+    createdAt : Time
+    observers : [Party]
+  where
+    signatory trader
+    observer observers
+
+    -- Ensure valid order parameters
+    ensure quantity > 0.0 && price >= 0.0 && filled >= 0.0 && filled <= quantity
+
+    -- Cancel order
+    choice CancelOrder : ContractId Order
+      controller trader
+      do
+        assertMsg "Order already filled" (filled < quantity)
+        create this with status = "cancelled"
+
+    -- Fill order (partially or fully)
+    choice FillOrder : ContractId Order
+      with
+        fillQuantity : Decimal
+        fillPrice : Decimal
+      controller trader
+      do
+        assertMsg "Fill quantity exceeds remaining" (fillQuantity <= quantity - filled)
+        let newFilled = filled + fillQuantity
+        let newStatus = if newFilled >= quantity then "filled" else "partially_filled"
+        create this with
+          filled = newFilled
+          status = newStatus

@@ -10,11 +10,11 @@
         <div class="stat-info">
           <div class="stat-label">Total Value</div>
           <div class="stat-value">{{ (totalValue$ | async) || 0 | currency }}</div>
-          <div class="stat-change positive" *ngIf="stats?.change24h && stats.change24h > 0">
-            +{{ stats.change24h }}% (24h)
+          <div class="stat-change positive" *ngIf="stats && stats.change24h !== undefined && stats.change24h > 0">
+            +{{ stats!.change24h }}% (24h)
           </div>
-          <div class="stat-change negative" *ngIf="stats?.change24h && stats.change24h < 0">
-            {{ stats.change24h }}% (24h)
+          <div class="stat-change negative" *ngIf="stats && stats.change24h !== undefined && stats.change24h < 0">
+            {{ stats!.change24h }}% (24h)
           </div>
         </div>
       </mat-card-content>

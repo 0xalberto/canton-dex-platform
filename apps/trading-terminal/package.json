@@ -52,7 +52,6 @@
     "@vitest/coverage-v8": "^1.1.0",
     "@testing-library/react": "^14.1.0",
     "@testing-library/jest-dom": "^6.1.0",
-    "cypress": "^13.6.0",
-    "@shadcn/ui": "^0.3.0"
+    "cypress": "^13.6.0"
   }
 }

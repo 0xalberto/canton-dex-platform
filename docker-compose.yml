@@ -1,6 +1,32 @@
 version: '3.8'
 
 services:
+  # Canton Participant Node (Privacy Ledger)
+  canton-participant:
+    image: digitalasset/canton-open-source:latest
+    container_name: cantondex-canton-participant
+    environment:
+      CANTON_DOMAIN: localhost
+      CANTON_PARTICIPANT_NAME: cantondex-participant
+      JAVA_OPTS: "-Xmx2g"
+    volumes:
+      - canton_data:/canton/data
+      - ./daml-contracts:/canton/daml-contracts:ro
+      - ./canton-config:/canton/config:ro
+    ports:
+      - "4851:4851"  # Canton HTTP JSON API
+      - "10011:10011"  # Canton Admin API
+      - "5008:5008"  # Canton Domain Manager
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4851/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - cantondex-network
+    command: >
+      daemon --config /canton/config/participant.conf
+
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
@@ -92,10 +118,14 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+      canton-participant:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${DB_USER:-cantondex}:${DB_PASSWORD:-devpassword}@postgres:5432/${DB_NAME:-cantondex}
       REDIS_URL: redis://:${REDIS_PASSWORD:-devpassword}@redis:6379/0
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      CANTON_LEDGER_API_HOST: canton-participant
+      CANTON_LEDGER_API_PORT: 4851
       ENVIRONMENT: development
       LOG_LEVEL: debug
     volumes:
@@ -128,24 +158,28 @@ services:
     networks:
       - cantondex-network
 
-  # Compliance Service (Python)
-  compliance-service:
+  # Settlement Coordinator (Python)
+  settlement-coordinator:
     build:
-      context: ./cantondex-backend/compliance-service
+      context: ./cantondex-backend/settlement-coordinator
       dockerfile: Dockerfile
-    container_name: cantondex-compliance-service
+    container_name: cantondex-settlement-coordinator
     depends_on:
       postgres:
         condition: service_healthy
       kafka:
         condition: service_healthy
+      canton-participant:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${DB_USER:-cantondex}:${DB_PASSWORD:-devpassword}@postgres:5432/${DB_NAME:-cantondex}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      CANTON_LEDGER_API_HOST: canton-participant
+      CANTON_LEDGER_API_PORT: 4851
       ENVIRONMENT: development
       LOG_LEVEL: debug
     ports:
-      - "8001:50052"
+      - "8003:8003"
     networks:
       - cantondex-network
 
@@ -173,12 +207,12 @@ services:
     networks:
       - cantondex-network
 
-  # Settlement Coordinator (Python)
-  settlement-coordinator:
+  # Compliance Service (Python)
+  compliance-service:
     build:
-      context: ./cantondex-backend/settlement-coordinator
+      context: ./cantondex-backend/compliance-service
       dockerfile: Dockerfile
-    container_name: cantondex-settlement-coordinator
+    container_name: cantondex-compliance-service
     depends_on:
       postgres:
         condition: service_healthy
@@ -190,7 +224,7 @@ services:
       ENVIRONMENT: development
       LOG_LEVEL: debug
     ports:
-      - "8003:8003"
+      - "8001:50052"
     networks:
       - cantondex-network
 
@@ -219,3 +253,4 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  canton_data:

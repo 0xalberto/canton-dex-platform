@@ -87,4 +87,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     if (change < 0) return 'negative';
     return 'neutral';
   }
+
+  parseFloat(value: string): number {
+    return parseFloat(value);
+  }
 }

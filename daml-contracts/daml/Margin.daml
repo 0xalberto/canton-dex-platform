@@ -1,0 +1,45 @@
+-- Margin Template
+-- Represents margin requirements and calculations
+
+module Margin where
+
+template Margin
+  with
+    manager : Party
+    trader : Party
+    accountId : Text
+    initialMarginPercent : Decimal  -- e.g., 0.20 for 20%
+    maintenanceMarginPercent : Decimal  -- e.g., 0.10 for 10%
+    currentEquity : Decimal
+    usedMargin : Decimal
+    observers : [Party]
+  where
+    signatory manager
+    observer trader :: observers
+
+    -- Ensure valid margin parameters
+    ensure initialMarginPercent > 0.0 && 
+           maintenanceMarginPercent > 0.0 &&
+           maintenanceMarginPercent < initialMarginPercent &&
+           currentEquity >= 0.0 &&
+           usedMargin >= 0.0
+
+    -- Update margin utilization
+    choice UpdateMargin : ContractId Margin
+      with
+        newEquity : Decimal
+        newUsedMargin : Decimal
+      controller manager
+      do
+        create this with
+          currentEquity = newEquity
+          usedMargin = newUsedMargin
+
+    -- Check if margin call is needed
+    choice CheckMarginCall : Bool
+      controller manager
+      do
+        let marginLevel = if usedMargin > 0.0 
+                         then currentEquity / usedMargin 
+                         else 999.0
+        return (marginLevel < 1.0)  -- Margin call if < 100%

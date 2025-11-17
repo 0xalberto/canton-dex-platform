@@ -1,0 +1,48 @@
+-- Trade Template
+-- Represents an executed trade
+
+module Trade where
+
+template Trade
+  with
+    tradeId : Text
+    buyerOrderId : Text
+    sellerOrderId : Text
+    buyer : Party
+    seller : Party
+    symbol : Text
+    quantity : Decimal
+    price : Decimal
+    commission : Decimal
+    executedAt : Time
+    observers : [Party]
+  where
+    signatory buyer, seller
+    observer observers
+
+    -- Ensure valid trade parameters
+    ensure quantity > 0.0 && price > 0.0 && commission >= 0.0
+
+    -- Settle trade (creates settlement instruction)
+    choice SettleTrade : ContractId Settlement
+      with
+        buyerAccountId : Text
+        sellerAccountId : Text
+        securitiesIssuer : Party
+        cashProvider : Party
+        settlementDate : Date
+      controller buyer, seller
+      do
+        create Settlement with
+          settlementId = tradeId <> "_settlement"
+          tradeId = tradeId
+          buyer = buyer
+          seller = seller
+          securitiesIssuer = securitiesIssuer
+          cashProvider = cashProvider
+          symbol = symbol
+          quantity = quantity
+          cashAmount = quantity * price
+          settlementDate = settlementDate
+          status = "pending"
+          observers = observers

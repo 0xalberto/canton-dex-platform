@@ -1,0 +1,103 @@
+-- CustodyBridge Template
+-- Integration with external custody providers (Fireblocks, Anchorage, BitGo)
+
+module CustodyBridge where
+
+template CustodyBridge
+  with
+    custodyProvider : Party
+    trader : Party
+    accountId : Text
+    providerName : Text  -- "fireblocks", "anchorage", "bitgo"
+    externalAccountRef : Text
+    status : Text  -- "pending", "active", "suspended"
+    observers : [Party]
+  where
+    signatory custodyProvider, trader
+    observer observers
+
+    -- Submit deposit transaction signature
+    choice SubmitDepositSignature : ContractId CustodyDepositRequest
+      with
+        depositId : Text
+        amount : Decimal
+        currency : Text
+        signature : Text
+        transactionHash : Text
+      controller custodyProvider
+      do
+        create CustodyDepositRequest with
+          custodyProvider = custodyProvider
+          trader = trader
+          accountId = accountId
+          depositId = depositId
+          amount = amount
+          currency = currency
+          signature = signature
+          transactionHash = transactionHash
+          status = "confirmed"
+          observers = observers
+
+    -- Submit withdrawal transaction signature
+    choice SubmitWithdrawalSignature : ContractId CustodyWithdrawalRequest
+      with
+        withdrawalId : Text
+        amount : Decimal
+        currency : Text
+        destinationAddress : Text
+        signature : Text
+      controller custodyProvider
+      do
+        create CustodyWithdrawalRequest with
+          custodyProvider = custodyProvider
+          trader = trader
+          accountId = accountId
+          withdrawalId = withdrawalId
+          amount = amount
+          currency = currency
+          destinationAddress = destinationAddress
+          signature = signature
+          status = "pending_broadcast"
+          observers = observers
+
+-- Custody Deposit Request
+template CustodyDepositRequest
+  with
+    custodyProvider : Party
+    trader : Party
+    accountId : Text
+    depositId : Text
+    amount : Decimal
+    currency : Text
+    signature : Text
+    transactionHash : Text
+    status : Text
+    observers : [Party]
+  where
+    signatory custodyProvider, trader
+    observer observers
+
+-- Custody Withdrawal Request
+template CustodyWithdrawalRequest
+  with
+    custodyProvider : Party
+    trader : Party
+    accountId : Text
+    withdrawalId : Text
+    amount : Decimal
+    currency : Text
+    destinationAddress : Text
+    signature : Text
+    status : Text
+    observers : [Party]
+  where
+    signatory custodyProvider, trader
+    observer observers
+
+    -- Confirm withdrawal broadcast
+    choice ConfirmWithdrawal : ContractId CustodyWithdrawalRequest
+      with
+        transactionHash : Text
+      controller custodyProvider
+      do
+        create this with status = "confirmed"

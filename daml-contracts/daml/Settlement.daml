@@ -1,0 +1,86 @@
+-- Settlement Template
+-- Atomic Delivery-vs-Payment (DvP) settlement
+
+module Settlement where
+
+template Settlement
+  with
+    settlementId : Text
+    tradeId : Text
+    buyer : Party
+    seller : Party
+    securitiesIssuer : Party
+    cashProvider : Party
+    symbol : Text
+    quantity : Decimal
+    cashAmount : Decimal
+    settlementDate : Date
+    status : Text  -- "pending", "initiated", "confirmed", "settled", "failed"
+    observers : [Party]
+  where
+    signatory buyer, seller, securitiesIssuer, cashProvider
+    observer observers
+
+    -- Ensure valid settlement parameters
+    ensure quantity > 0.0 && cashAmount > 0.0
+
+    -- Execute atomic DvP settlement
+    choice ExecuteDeliveryVsPayment : ContractId SettledDeliveryVsPayment
+      with
+        buyerSecuritiesRef : Text
+        sellerCashRef : Text
+      controller buyer, seller
+      do
+        -- Verify securities locked
+        assertMsg "Buyer securities reference required" (buyerSecuritiesRef /= "")
+        
+        -- Verify cash locked
+        assertMsg "Seller cash reference required" (sellerCashRef /= "")
+        
+        -- Create settled contract (atomic commitment)
+        create SettledDeliveryVsPayment with
+          settlementId = settlementId
+          tradeId = tradeId
+          buyer = buyer
+          seller = seller
+          securitiesIssuer = securitiesIssuer
+          cashProvider = cashProvider
+          symbol = symbol
+          quantity = quantity
+          cashAmount = cashAmount
+          settlementDate = settlementDate
+          securitiesTransferId = buyerSecuritiesRef
+          cashTransferId = sellerCashRef
+          settledAt = settlementDate  -- In production, use current time
+          observers = observers
+
+    -- Fail settlement
+    choice FailSettlement : ContractId Settlement
+      with
+        failureReason : Text
+      controller buyer, seller
+      do
+        create this with status = "failed"
+
+-- Settled DvP Template (immutable record)
+template SettledDeliveryVsPayment
+  with
+    settlementId : Text
+    tradeId : Text
+    buyer : Party
+    seller : Party
+    securitiesIssuer : Party
+    cashProvider : Party
+    symbol : Text
+    quantity : Decimal
+    cashAmount : Decimal
+    settlementDate : Date
+    securitiesTransferId : Text
+    cashTransferId : Text
+    settledAt : Date
+    observers : [Party]
+  where
+    signatory buyer, seller, securitiesIssuer, cashProvider
+    observer observers
+
+    -- Immutable - no choices allowed

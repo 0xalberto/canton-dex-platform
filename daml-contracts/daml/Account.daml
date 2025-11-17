@@ -1,0 +1,72 @@
+-- Account Template
+-- Represents a trading account with cash balances
+
+module Account where
+
+template Account
+  with
+    owner : Party
+    accountId : Text
+    accountType : Text  -- "spot", "margin", "custody"
+    cashBalance : Decimal
+    reservedBalance : Decimal
+    observers : [Party]
+  where
+    signatory owner
+    observer observers
+
+    -- Ensure balances are non-negative
+    ensure cashBalance >= 0.0 && reservedBalance >= 0.0
+
+    -- Update cash balance
+    choice UpdateBalance : ContractId Account
+      with
+        newCashBalance : Decimal
+        newReservedBalance : Decimal
+      controller owner
+      do
+        create this with
+          cashBalance = newCashBalance
+          reservedBalance = newReservedBalance
+
+    -- Reserve funds for order
+    choice ReserveFunds : ContractId Account
+      with
+        amount : Decimal
+      controller owner
+      do
+        assertMsg "Insufficient available balance" (cashBalance >= amount)
+        create this with
+          cashBalance = cashBalance - amount
+          reservedBalance = reservedBalance + amount
+
+    -- Release reserved funds
+    choice ReleaseFunds : ContractId Account
+      with
+        amount : Decimal
+      controller owner
+      do
+        assertMsg "Insufficient reserved balance" (reservedBalance >= amount)
+        create this with
+          cashBalance = cashBalance + amount
+          reservedBalance = reservedBalance - amount
+
+    -- Transfer funds to another account (for settlement)
+    choice TransferFunds : (ContractId Account, ContractId Account)
+      with
+        recipientAccountCid : ContractId Account
+        amount : Decimal
+      controller owner
+      do
+        assertMsg "Insufficient cash balance" (cashBalance >= amount)
+        
+        -- Update sender account
+        newSenderCid <- create this with
+          cashBalance = cashBalance - amount
+        
+        -- Update recipient account
+        recipientAccount <- fetch recipientAccountCid
+        newRecipientCid <- create recipientAccount with
+          cashBalance = recipientAccount.cashBalance + amount
+        
+        return (newSenderCid, newRecipientCid)
