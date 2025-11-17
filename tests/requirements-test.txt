@@ -1,0 +1,78 @@
+# Testing dependencies for CantonDEX
+
+# Core testing frameworks
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-xdist==3.5.0
+pytest-timeout==2.2.0
+pytest-repeat==0.9.1
+
+# Mocking and fixtures
+faker==20.1.0
+factory-boy==3.3.0
+freezegun==1.4.0
+
+# FastAPI testing
+httpx==0.25.2
+starlette==0.27.0
+
+# Frontend testing
+vitest==1.0.4
+@testing-library/react==14.1.2
+@testing-library/jest-dom==6.1.5
+@testing-library/user-event==14.5.1
+jsdom==23.0.1
+
+# E2E testing
+cypress==13.6.2
+cypress-cucumber-preprocessor==4.3.1
+
+# Performance testing
+locust==2.17.0
+k6==1.2.0
+pytest-benchmark==4.0.0
+
+# Security testing
+bandit==1.7.5
+semgrep==1.45.0
+safety==2.3.5
+
+# Dependency scanning
+snyk==1.1262.0
+pipdeptree==3.13.2
+
+# Container scanning
+trivy==0.47.0
+
+# Coverage and reporting
+coverage==7.3.2
+pytest-html==4.1.1
+allure-pytest==2.13.2
+
+# Code quality
+black==23.12.0
+flake8==6.1.0
+isort==5.13.2
+pylint==3.0.3
+mypy==1.7.1
+
+# Database testing
+testcontainers==3.7.1
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+
+# Async testing
+aioresponses==0.7.6
+pytest-asyncio==0.21.1
+
+# Load testing
+faker==20.1.0
+hypothesis==6.84.3
+
+# Monitoring/observability testing
+prometheus-client==0.19.0
+
+# Documentation
+pytest-json-report==1.5.0
