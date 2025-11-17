@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start -p 3001",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo 'Tests not configured for admin panel'",
+    "test:unit": "echo 'Unit tests not configured for admin panel'",
+    "test:integration": "echo 'Integration tests not configured for admin panel'",
+    "test:e2e": "echo 'E2E tests not configured for admin panel'"
   },
   "dependencies": {
     "next": "^14.2.0",

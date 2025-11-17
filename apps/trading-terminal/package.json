@@ -10,6 +10,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives",
     "lint:fix": "eslint src --ext ts,tsx --fix",
     "format": "prettier --write src",
+    "format:check": "prettier --check src",
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:unit": "vitest run",

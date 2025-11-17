@@ -10,7 +10,13 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
+    "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "type-check": "vue-tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --reporter=verbose",
+    "test:e2e": "echo 'E2E tests not configured for compliance dashboard'"
   },
   "dependencies": {
     "vue": "^3.3.11",

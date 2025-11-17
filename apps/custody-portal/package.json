@@ -7,7 +7,14 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
+    "type-check": "ng build --dry-run",
+    "test:unit": "ng test --watch=false",
+    "test:integration": "ng test --watch=false",
+    "test:e2e": "echo 'E2E tests not configured for custody portal'"
   },
   "private": true,
   "dependencies": {
