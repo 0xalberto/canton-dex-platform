@@ -4,6 +4,7 @@ import { OrderBook } from '../components/trading/OrderBook';
 import { TradeHistory } from '../components/trading/TradeHistory';
 import { tradingAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { ToastContainer, useToast } from '../components/ui/Toast';
 
 interface StatCard {
   title: string;
@@ -16,6 +17,8 @@ interface StatCard {
 export default function Dashboard() {
   const { user } = useAuth();
   const [newOrderOpen, setNewOrderOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { toasts, addToast, removeToast } = useToast();
   const [stats, setStats] = useState<StatCard[]>([
     { title: 'Total Volume', value: '$12.5M', change: '+15.3%', trend: 'up', icon: '📊' },
     { title: 'Active Orders', value: '24', change: '+8', trend: 'up', icon: '📝' },
@@ -23,15 +26,22 @@ export default function Dashboard() {
     { title: 'P&L Today', value: '+$23.4K', change: '+5.2%', trend: 'up', icon: '💰' },
   ]);
 
+  const handleOrderSuccess = () => {
+    addToast('Order placed successfully! Waiting for matching...', 'success');
+    // Force refresh of OrderBook and TradeHistory
+    setRefreshKey(prev => prev + 1);
+  };
+
   return (
     <div className="p-6 space-y-6 fade-in">
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+
       {/* New Order Modal */}
       <NewOrderModal 
         isOpen={newOrderOpen}
         onClose={() => setNewOrderOpen(false)}
-        onSuccess={() => {
-          console.log('Order placed successfully!');
-        }}
+        onSuccess={handleOrderSuccess}
       />
 
       {/* Header */}
@@ -95,11 +105,11 @@ export default function Dashboard() {
         </div>
 
         {/* Order Book - REAL DATA */}
-        <OrderBook pair="BTC/USDT" depth={10} />
+        <OrderBook key={`orderbook-${refreshKey}`} pair="BTC/USDT" depth={10} />
       </div>
 
       {/* Recent Trades - REAL DATA */}
-      <TradeHistory pair="BTC/USDT" limit={15} />
+      <TradeHistory key={`trades-${refreshKey}`} pair="BTC/USDT" limit={15} />
     </div>
   );
 }
