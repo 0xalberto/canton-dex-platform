@@ -4,7 +4,7 @@
 
 ### Required Software
 - **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop/)
-- **DAML SDK 2.9.0** - [Download](https://github.com/digital-asset/daml/releases/tag/v2.9.0)
+- **DAML SDK (latest)** - Install via: `daml install latest`
 - **Python 3.11+** - [Download](https://www.python.org/downloads/)
 - **Node.js 18+** - [Download](https://nodejs.org/)
 - **pnpm** - `npm install -g pnpm`
@@ -16,7 +16,8 @@
 #### Windows
 ```powershell
 # Download installer
-Invoke-WebRequest -Uri "https://github.com/digital-asset/daml/releases/download/v2.9.0/daml-sdk-2.9.0-windows.exe" -OutFile "daml-installer.exe"
+# Install latest DAML SDK
+daml install latest
 
 # Run installer
 .\daml-installer.exe

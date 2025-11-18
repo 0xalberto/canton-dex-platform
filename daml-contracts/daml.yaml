@@ -1,8 +1,7 @@
-sdk-version: 2.9.0
+sdk-version: 3.4.7
 name: cantondex-contracts
 version: 1.0.0
 source: daml
-init-script: Main:setup
 parties:
   - Alice
   - Bob
@@ -13,5 +12,3 @@ parties:
 dependencies:
   - daml-prim
   - daml-stdlib
-build-options:
-  - --target=2.1

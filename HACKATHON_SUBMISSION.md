@@ -73,7 +73,7 @@ CantonDEX is a privacy-preserving institutional trading platform built on Canton
 ### Tools, Technologies, or Methods
 
 **Smart Contracts & Ledger**:
-- **DAML 2.9.0**: Type-safe smart contract language
+- **DAML 3.4.7**: Type-safe smart contract language
 - **Canton Network**: Privacy-preserving distributed ledger
 - **10 DAML Templates**: Account, Order, Trade, Settlement, Asset, Margin, Compliance, RiskLimit, CustodyBridge, AuditLog
 
@@ -206,7 +206,7 @@ template Settlement with
 
 ### Prerequisites
 - Docker Desktop installed
-- DAML SDK 2.9.0 installed
+- DAML SDK (latest version) installed
 - Python 3.11+
 - Node.js 18+
 

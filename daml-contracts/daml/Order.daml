@@ -3,8 +3,6 @@
 
 module Order where
 
-import Account
-
 template Order
   with
     orderId : Text
