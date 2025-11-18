@@ -44,6 +44,9 @@ export interface Alert {
   createdAt: string
   updatedAt: string
   assignedTo?: string
+  metadata?: Record<string, unknown>
+  rule?: string
+  accountId?: string
 }
 
 export enum AlertStatus {

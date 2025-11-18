@@ -42,5 +42,5 @@ USER appuser
 # Expose port
 EXPOSE 8003
 
-# Run application
-CMD ["python", "settlement_service.py"]
+# Run FastAPI application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]

@@ -1,13 +1,11 @@
-"""
-Compliance Service (Spring Boot)
-KYC/AML, trade surveillance, alert management, audit trails
-"""
+"""Compliance service responsible for KYC/AML and surveillance routines."""
 
 import asyncio
 from enum import Enum
 from pydantic import BaseModel
-from typing import Optional, List
-from datetime import datetime
+from typing import Optional, List, Dict
+from datetime import datetime, timedelta
+from uuid import uuid4, UUID
 
 class ComplianceStatus(str, Enum):
     """Compliance status"""
@@ -69,7 +67,7 @@ class AuditLog(BaseModel):
     salted_hash: str  # SHA-256(action + actor + resource + timestamp + salt)
 
 class ComplianceService:
-    """Compliance service"""
+    """In-memory compliance service used by API and demo frontends."""
     
     def __init__(self):
         self.kyc_records: Dict[str, KYCRecord] = {}
@@ -201,7 +199,7 @@ class ComplianceService:
     ) -> ComplianceAlert:
         """Generate compliance alert"""
         alert = ComplianceAlert(
-            alert_id=str(UUID.new_v4()),
+            alert_id=str(uuid4()),
             account_id=account_id,
             rule=rule,
             severity=severity,
@@ -249,7 +247,7 @@ class ComplianceService:
         salted_hash = hashlib.sha256(log_string.encode()).hexdigest()
         
         log_entry = AuditLog(
-            log_id=str(UUID.new_v4()),
+            log_id=str(uuid4()),
             timestamp=datetime.utcnow(),
             action=action,
             actor=actor,

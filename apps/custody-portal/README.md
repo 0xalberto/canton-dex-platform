@@ -60,14 +60,16 @@ src/
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start development server
-npm start
+pnpm start
 
 # Navigate to
 http://localhost:4200
 ```
+
+> **Note**: Backend API Gateway must be running at `http://localhost:8000` before starting the portal.
 
 ### Build
 
