@@ -1,4 +1,11 @@
+import { useState } from 'react';
+import { DepositModal } from '../components/modals/DepositModal';
+import { WithdrawModal } from '../components/modals/WithdrawModal';
+
 export default function PortfolioPage() {
+  const [depositModalOpen, setDepositModalOpen] = useState(false);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+
   const assets = [
     { symbol: 'BTC', name: 'Bitcoin', balance: '0.5', value: '$22,617', change: '+12.5%', trend: 'up' },
     { symbol: 'ETH', name: 'Ethereum', balance: '2.0', value: '$5,668', change: '+8.3%', trend: 'up' },
@@ -19,14 +26,36 @@ export default function PortfolioPage() {
           <p className="text-gray-400 mt-1">Manage your digital assets</p>
         </div>
         <div className="flex gap-3">
-          <button className="btn bg-green-500/20 hover:bg-green-500/30 text-green-400">
+          <button 
+            onClick={() => setDepositModalOpen(true)}
+            className="btn bg-green-500/20 hover:bg-green-500/30 text-green-400"
+          >
             <span className="mr-2">+</span> Deposit
           </button>
-          <button className="btn bg-red-500/20 hover:bg-red-500/30 text-red-400">
+          <button 
+            onClick={() => setWithdrawModalOpen(true)}
+            className="btn bg-red-500/20 hover:bg-red-500/30 text-red-400"
+          >
             <span className="mr-2">-</span> Withdraw
           </button>
         </div>
       </div>
+
+      {/* Modals */}
+      <DepositModal 
+        isOpen={depositModalOpen} 
+        onClose={() => setDepositModalOpen(false)}
+        onSuccess={() => {
+          console.log('Deposit successful!');
+        }}
+      />
+      <WithdrawModal 
+        isOpen={withdrawModalOpen} 
+        onClose={() => setWithdrawModalOpen(false)}
+        onSuccess={() => {
+          console.log('Withdrawal successful!');
+        }}
+      />
 
       {/* Total Value Card */}
       <div className="glass-card card-3d relative overflow-hidden">

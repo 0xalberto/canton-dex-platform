@@ -1,10 +1,10 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuthStore();
+  const { user, logout } = useAuth();
 
   const menuItems = [
     { path: '/dashboard', icon: '📊', label: 'Dashboard' },
@@ -68,8 +68,11 @@ export default function DashboardLayout() {
                 <span className="text-lg">👤</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{user?.name || 'Demo User'}</p>
+                <p className="font-semibold truncate">{user?.displayName || 'Demo User'}</p>
                 <p className="text-xs text-gray-400 truncate">{user?.email || 'demo@cantondex.io'}</p>
+                <p className="text-xs text-gray-500 font-mono truncate mt-0.5">
+                  {user?.partyId?.split('::').pop() || 'Not connected'}
+                </p>
               </div>
             </div>
             <button
