@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Canton Network](https://img.shields.io/badge/Canton-Network-blue)](https://www.canton.network/)
-[![DAML](https://img.shields.io/badge/DAML-2.9.0-green)](https://www.digitalasset.com/developers)
+[![DAML](https://img.shields.io/badge/DAML-3.4.7-green)](https://www.digitalasset.com/developers)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-success)](https://github.com/getcakedieyoungx/cantondex)
 
 > Built for [Canton Construct Ideathon](https://www.canton.network/) - **AMM Swaps & DEXes** Track
@@ -124,7 +124,7 @@ Canton Client → Canton Network
 
 ## 📊 Tech Stack
 
-- **DAML 2.9.0**: Smart contracts
+- **DAML 3.4.7**: Smart contracts
 - **Canton Network**: Privacy ledger
 - **Python 3.11**: Backend
 - **FastAPI**: REST API

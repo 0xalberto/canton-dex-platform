@@ -3,6 +3,8 @@
 
 module Trade where
 
+import Settlement
+
 template Trade
   with
     tradeId : Text

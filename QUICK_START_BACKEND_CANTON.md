@@ -12,7 +12,8 @@
 **Windows**:
 ```powershell
 # Download Daml SDK installer
-Invoke-WebRequest -Uri "https://github.com/digital-asset/daml/releases/download/v2.9.0/daml-sdk-2.9.0-windows.exe" -OutFile "daml-installer.exe"
+# Install latest DAML SDK
+daml install latest
 
 # Run installer
 .\daml-installer.exe

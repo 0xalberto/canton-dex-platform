@@ -8,7 +8,7 @@ This guide provides step-by-step instructions for judges to review and test the 
 
 Ensure you have:
 - ✅ Docker Desktop installed and running
-- ✅ DAML SDK 2.9.0 installed
+- ✅ DAML SDK (latest version - 3.4.7 or higher)
 - ✅ Python 3.11+
 - ✅ Node.js 18+ and pnpm
 - ✅ MetaMask browser extension (for wallet testing)
@@ -18,7 +18,7 @@ Ensure you have:
 ```bash
 # Verify installations
 docker --version        # Should show Docker 20.10+
-daml version           # Should show 2.9.0
+daml version           # Should show 3.4.7 or higher
 python --version       # Should show 3.11+
 node --version         # Should show 18.0+
 pnpm --version         # Should show 8.0+
