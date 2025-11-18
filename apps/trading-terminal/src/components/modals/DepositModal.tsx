@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { usePortfolioStore } from '../../store/portfolioStore';
+import { tradingAPI } from '../../services/api';
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -10,24 +10,61 @@ interface DepositModalProps {
 
 export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { user } = useAuth();
-  const { deposit } = usePortfolioStore();
   const [asset, setAsset] = useState('USDT');
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [accountId, setAccountId] = useState<string | null>(null);
 
   const assets = ['USDT', 'BTC', 'ETH', 'SOL', 'tTBILL'];
 
+  // Get or create trading account on mount
+  useEffect(() => {
+    const initAccount = async () => {
+      if (!user?.partyId) return;
+      
+      try {
+        // Try to get existing account
+        const account = await tradingAPI.getAccount(user.partyId);
+        setAccountId(account.account_id);
+      } catch (error) {
+        // Account doesn't exist, create it
+        try {
+          const newAccount = await tradingAPI.createAccount(
+            user.partyId,
+            user.displayName,
+            user.email
+          );
+          setAccountId(newAccount.account_id);
+        } catch (createError) {
+          console.error('Failed to create account:', createError);
+        }
+      }
+    };
+
+    if (isOpen && user) {
+      initAccount();
+    }
+  }, [isOpen, user]);
+
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!accountId) {
+      alert('Account not ready. Please try again.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Simulate deposit transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call real API
+      const result = await tradingAPI.deposit(
+        accountId,
+        asset,
+        parseFloat(amount)
+      );
       
-      // Actually update portfolio balance
-      deposit(asset, parseFloat(amount));
+      console.log('Deposit successful:', result);
       
       setSuccess(true);
       setTimeout(() => {
@@ -36,6 +73,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
       }, 1500);
     } catch (error) {
       console.error('Deposit failed:', error);
+      alert(`Deposit failed: ${error}`);
     } finally {
       setLoading(false);
     }

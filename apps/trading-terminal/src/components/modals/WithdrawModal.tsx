@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { usePortfolioStore } from '../../store/portfolioStore';
+import { tradingAPI, Balance } from '../../services/api';
 
 interface WithdrawModalProps {
   isOpen: boolean;
@@ -10,22 +10,65 @@ interface WithdrawModalProps {
 
 export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { user } = useAuth();
-  const { withdraw, assets: portfolioAssets } = usePortfolioStore();
   const [asset, setAsset] = useState('USDT');
   const [amount, setAmount] = useState('');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [accountId, setAccountId] = useState<string | null>(null);
+  const [balances, setBalances] = useState<Record<string, Balance>>({});
 
   const assets = ['USDT', 'BTC', 'ETH', 'SOL', 'tTBILL'];
   
-  // Get real balances from portfolio
+  // Get real balances from API
   const getBalance = (symbol: string) => {
-    return portfolioAssets[symbol]?.balance || '0';
+    return balances[symbol]?.available || '0';
   };
+
+  // Load account and balances on mount
+  useEffect(() => {
+    const initAccountAndBalances = async () => {
+      if (!user?.partyId) return;
+      
+      try {
+        // Get or create account
+        let account;
+        try {
+          account = await tradingAPI.getAccount(user.partyId);
+        } catch {
+          account = await tradingAPI.createAccount(
+            user.partyId,
+            user.displayName,
+            user.email
+          );
+        }
+        
+        setAccountId(account.account_id);
+        
+        // Load balances
+        const balancesList = await tradingAPI.getBalances(user.partyId);
+        const balancesMap: Record<string, Balance> = {};
+        balancesList.forEach(b => {
+          balancesMap[b.asset_symbol] = b;
+        });
+        setBalances(balancesMap);
+      } catch (error) {
+        console.error('Failed to load account:', error);
+      }
+    };
+
+    if (isOpen && user) {
+      initAccountAndBalances();
+    }
+  }, [isOpen, user]);
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!accountId) {
+      alert('Account not ready. Please try again.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -38,11 +81,15 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
         return;
       }
 
-      // Simulate withdraw transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call real API
+      const result = await tradingAPI.withdraw(
+        accountId,
+        asset,
+        withdrawAmount,
+        address
+      );
       
-      // Actually update portfolio balance
-      withdraw(asset, withdrawAmount);
+      console.log('Withdraw successful:', result);
       
       setSuccess(true);
       setTimeout(() => {
@@ -51,6 +98,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
       }, 1500);
     } catch (error) {
       console.error('Withdraw failed:', error);
+      alert(`Withdraw failed: ${error}`);
     } finally {
       setLoading(false);
     }
