@@ -221,8 +221,8 @@ class MatchingEngine:
                     account_id, party_id, tx_type, asset_symbol, 
                     amount, balance_after, trade_id, description
                 ) VALUES (
-                    $1, $2, 'TRADE', $3, $4, 
-                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3),
+                    $1, $2, 'TRADE', $3::VARCHAR, $4, 
+                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3::VARCHAR),
                     $5, $6
                 )
             """, maker_order['account_id'], maker_order['party_id'], base_asset,
@@ -233,8 +233,8 @@ class MatchingEngine:
                     account_id, party_id, tx_type, asset_symbol, 
                     amount, balance_after, trade_id, description
                 ) VALUES (
-                    $1, $2, 'TRADE', $3, $4, 
-                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3),
+                    $1, $2, 'TRADE', $3::VARCHAR, $4, 
+                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3::VARCHAR),
                     $5, $6
                 )
             """, taker_order['account_id'], taker_order['party_id'], base_asset,
@@ -254,7 +254,7 @@ class MatchingEngine:
         # Check if balance exists
         balance = await conn.fetchrow("""
             SELECT balance_id, available FROM balances
-            WHERE account_id = $1 AND asset_symbol = $2
+            WHERE account_id = $1 AND asset_symbol = $2::VARCHAR
         """, account_id, asset)
         
         if balance:
@@ -274,7 +274,7 @@ class MatchingEngine:
             
             await conn.execute("""
                 INSERT INTO balances (account_id, asset_symbol, available)
-                VALUES ($1, $2, $3)
+                VALUES ($1, $2::VARCHAR, $3)
             """, account_id, asset, amount)
     
     async def run_continuous_matching(self):
@@ -585,7 +585,7 @@ async def deposit(request: DepositRequest, conn = Depends(get_db)):
             await conn.execute("""
                 UPDATE balances
                 SET available = available + $1, updated_at = NOW()
-                WHERE account_id = $2 AND asset_symbol = $3
+                WHERE account_id = $2 AND asset_symbol = $3::VARCHAR
             """, float(request.amount), uuid.UUID(request.account_id), request.asset_symbol)
             
             # Get party_id
@@ -599,8 +599,8 @@ async def deposit(request: DepositRequest, conn = Depends(get_db)):
                     account_id, party_id, tx_type, asset_symbol, amount,
                     balance_after, description
                 ) VALUES (
-                    $1, $2, 'DEPOSIT', $3, $4,
-                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3),
+                    $1, $2, 'DEPOSIT', $3::VARCHAR, $4,
+                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3::VARCHAR),
                     $5
                 ) RETURNING transaction_id
             """, uuid.UUID(request.account_id), party_id, request.asset_symbol, 
@@ -618,7 +618,7 @@ async def withdraw(request: WithdrawRequest, conn = Depends(get_db)):
             # Check balance
             balance = await conn.fetchval("""
                 SELECT available FROM balances
-                WHERE account_id = $1 AND asset_symbol = $2
+                WHERE account_id = $1 AND asset_symbol = $2::VARCHAR
             """, uuid.UUID(request.account_id), request.asset_symbol)
             
             if balance is None or float(balance) < float(request.amount):
@@ -628,7 +628,7 @@ async def withdraw(request: WithdrawRequest, conn = Depends(get_db)):
             await conn.execute("""
                 UPDATE balances
                 SET available = available - $1, updated_at = NOW()
-                WHERE account_id = $2 AND asset_symbol = $3
+                WHERE account_id = $2 AND asset_symbol = $3::VARCHAR
             """, float(request.amount), uuid.UUID(request.account_id), request.asset_symbol)
             
             # Get party_id
@@ -642,8 +642,8 @@ async def withdraw(request: WithdrawRequest, conn = Depends(get_db)):
                     account_id, party_id, tx_type, asset_symbol, amount,
                     balance_after, description
                 ) VALUES (
-                    $1, $2, 'WITHDRAW', $3, $4,
-                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3),
+                    $1, $2, 'WITHDRAW', $3::VARCHAR, $4,
+                    (SELECT available FROM balances WHERE account_id = $1 AND asset_symbol = $3::VARCHAR),
                     $5
                 ) RETURNING transaction_id
             """, uuid.UUID(request.account_id), party_id, request.asset_symbol,
@@ -687,7 +687,7 @@ async def create_order(request: CreateOrderRequest, conn = Depends(get_db)):
             # Lock assets
             balance = await conn.fetchval("""
                 SELECT available FROM balances
-                WHERE account_id = $1 AND asset_symbol = $2
+                WHERE account_id = $1 AND asset_symbol = $2::VARCHAR
             """, uuid.UUID(request.account_id), lock_asset)
             
             if balance is None or float(balance) < lock_amount:
@@ -696,7 +696,7 @@ async def create_order(request: CreateOrderRequest, conn = Depends(get_db)):
             await conn.execute("""
                 UPDATE balances
                 SET available = available - $1, locked = locked + $1
-                WHERE account_id = $2 AND asset_symbol = $3
+                WHERE account_id = $2 AND asset_symbol = $3::VARCHAR
             """, lock_amount, uuid.UUID(request.account_id), lock_asset)
             
             # Create order
@@ -795,7 +795,7 @@ async def cancel_order(order_id: str, conn = Depends(get_db)):
             await conn.execute("""
                 UPDATE balances
                 SET available = available + $1, locked = locked - $1
-                WHERE account_id = $2 AND asset_symbol = $3
+                WHERE account_id = $2 AND asset_symbol = $3::VARCHAR
             """, unlock_amount, order['account_id'], lock_asset)
             
             # Cancel order
