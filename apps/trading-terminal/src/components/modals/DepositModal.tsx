@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { usePortfolioStore } from '../../store/portfolioStore';
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface DepositModalProps {
 
 export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { user } = useAuth();
+  const { deposit } = usePortfolioStore();
   const [asset, setAsset] = useState('USDT');
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,9 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
     try {
       // Simulate deposit transaction
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Actually update portfolio balance
+      deposit(asset, parseFloat(amount));
       
       setSuccess(true);
       setTimeout(() => {

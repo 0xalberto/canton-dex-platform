@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { usePortfolioStore } from '../../store/portfolioStore';
 
 interface WithdrawModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface WithdrawModalProps {
 
 export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { user } = useAuth();
+  const { withdraw, assets: portfolioAssets } = usePortfolioStore();
   const [asset, setAsset] = useState('USDT');
   const [amount, setAmount] = useState('');
   const [address, setAddress] = useState('');
@@ -16,12 +18,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
   const [success, setSuccess] = useState(false);
 
   const assets = ['USDT', 'BTC', 'ETH', 'SOL', 'tTBILL'];
-  const balances: Record<string, string> = {
-    'USDT': '5,000',
-    'BTC': '0.5',
-    'ETH': '2.0',
-    'SOL': '10',
-    'tTBILL': '0'
+  
+  // Get real balances from portfolio
+  const getBalance = (symbol: string) => {
+    return portfolioAssets[symbol]?.balance || '0';
   };
 
   const handleWithdraw = async (e: React.FormEvent) => {
@@ -29,8 +29,20 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
     setLoading(true);
 
     try {
+      const withdrawAmount = parseFloat(amount);
+      const currentBalance = parseFloat(getBalance(asset).replace(',', ''));
+      
+      if (withdrawAmount > currentBalance) {
+        alert('Insufficient balance!');
+        setLoading(false);
+        return;
+      }
+
       // Simulate withdraw transaction
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Actually update portfolio balance
+      withdraw(asset, withdrawAmount);
       
       setSuccess(true);
       setTimeout(() => {
@@ -107,7 +119,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
                 >
                   {assets.map((a) => (
                     <option key={a} value={a}>
-                      {a} (Available: {balances[a]})
+                      {a} (Available: {getBalance(a)})
                     </option>
                   ))}
                 </select>
@@ -139,10 +151,10 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
                   </label>
                   <button
                     type="button"
-                    onClick={() => setAmount(balances[asset].replace(',', ''))}
+                    onClick={() => setAmount(getBalance(asset).replace(',', ''))}
                     className="text-primary-light text-xs hover:text-primary transition-colors"
                   >
-                    Max: {balances[asset]} {asset}
+                    Max: {getBalance(asset)} {asset}
                   </button>
                 </div>
                 <input
@@ -154,7 +166,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
                   placeholder="0.00"
                   required
                   min="0"
-                  max={balances[asset].replace(',', '')}
+                  max={getBalance(asset).replace(',', '')}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Network fee: ~0.1 {asset}
@@ -169,7 +181,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
                     type="button"
                     onClick={() => {
                       const percent = parseInt(val) / 100;
-                      const max = parseFloat(balances[asset].replace(',', ''));
+                      const max = parseFloat(getBalance(asset).replace(',', ''));
                       setAmount((max * percent).toString());
                     }}
                     className="btn bg-primary/10 hover:bg-primary/20 text-primary-light text-sm py-2"

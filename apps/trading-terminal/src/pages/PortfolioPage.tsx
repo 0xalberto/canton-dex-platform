@@ -1,21 +1,14 @@
 import { useState } from 'react';
 import { DepositModal } from '../components/modals/DepositModal';
 import { WithdrawModal } from '../components/modals/WithdrawModal';
+import { usePortfolioStore } from '../store/portfolioStore';
 
 export default function PortfolioPage() {
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
-  const assets = [
-    { symbol: 'BTC', name: 'Bitcoin', balance: '0.5', value: '$22,617', change: '+12.5%', trend: 'up' },
-    { symbol: 'ETH', name: 'Ethereum', balance: '2.0', value: '$5,668', change: '+8.3%', trend: 'up' },
-    { symbol: 'SOL', name: 'Solana', balance: '10', value: '$1,085', change: '-3.2%', trend: 'down' },
-    { symbol: 'USDT', name: 'Tether', balance: '5,000', value: '$5,000', change: '0%', trend: 'neutral' },
-  ];
-
-  const totalValue = assets.reduce((sum, asset) => 
-    sum + parseFloat(asset.value.replace('$', '').replace(',', '')), 0
-  );
+  const { assets, totalValue, transactions } = usePortfolioStore();
+  const assetsList = Object.values(assets);
 
   return (
     <div className="p-6 space-y-6 fade-in">
@@ -81,7 +74,7 @@ export default function PortfolioPage() {
 
       {/* Assets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {assets.map((asset, idx) => (
+        {assetsList.map((asset, idx) => (
           <div
             key={asset.symbol}
             className="glass-card card-3d"
@@ -151,35 +144,43 @@ export default function PortfolioPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { asset: 'BTC', type: 'Deposit', amount: '+0.1', time: '1h ago', status: 'Completed' },
-                { asset: 'ETH', type: 'Withdraw', amount: '-0.5', time: '3h ago', status: 'Completed' },
-                { asset: 'SOL', type: 'Trade', amount: '+5', time: '5h ago', status: 'Pending' },
-              ].map((tx, idx) => (
-                <tr key={idx}>
-                  <td className="font-semibold">{tx.asset}</td>
-                  <td>
-                    <span className={`badge ${
-                      tx.type === 'Deposit' ? 'badge-success' : 
-                      tx.type === 'Withdraw' ? 'badge-danger' : 
-                      'badge-warning'
-                    }`}>
-                      {tx.type}
-                    </span>
-                  </td>
-                  <td className={`font-mono ${tx.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                    {tx.amount}
-                  </td>
-                  <td className="text-gray-400 text-sm">{tx.time}</td>
-                  <td>
-                    <span className={`badge ${
-                      tx.status === 'Completed' ? 'badge-success' : 'badge-warning'
-                    }`}>
-                      {tx.status}
-                    </span>
+              {transactions.slice(0, 10).length > 0 ? (
+                transactions.slice(0, 10).map((tx) => {
+                  const timeAgo = Math.floor((Date.now() - tx.timestamp) / 1000 / 60);
+                  const timeStr = timeAgo < 60 ? `${timeAgo}m ago` : timeAgo < 1440 ? `${Math.floor(timeAgo / 60)}h ago` : `${Math.floor(timeAgo / 1440)}d ago`;
+                  return (
+                    <tr key={tx.id}>
+                      <td className="font-semibold">{tx.asset}</td>
+                      <td>
+                        <span className={`badge ${
+                          tx.type === 'Deposit' ? 'badge-success' : 
+                          tx.type === 'Withdraw' ? 'badge-danger' : 
+                          'badge-warning'
+                        }`}>
+                          {tx.type}
+                        </span>
+                      </td>
+                      <td className={`font-mono ${tx.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                        {tx.amount}
+                      </td>
+                      <td className="text-gray-400 text-sm">{timeStr}</td>
+                      <td>
+                        <span className={`badge ${
+                          tx.status === 'Completed' ? 'badge-success' : 'badge-warning'
+                        }`}>
+                          {tx.status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center text-gray-400 py-8">
+                    No transactions yet. Make your first deposit!
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
