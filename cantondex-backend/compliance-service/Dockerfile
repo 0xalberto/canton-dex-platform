@@ -39,8 +39,8 @@ ENV PATH=/root/.local/bin:$PATH \
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port (assuming gRPC)
-EXPOSE 50052
+# Expose HTTP port
+EXPOSE 8004
 
-# Run application
-CMD ["python", "compliance_service.py"]
+# Run FastAPI application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
