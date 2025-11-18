@@ -1,5 +1,5 @@
 # Multi-stage build for Rust Matching Engine
-FROM rust:1.75 as builder
+FROM rust:latest as builder
 
 WORKDIR /app
 
