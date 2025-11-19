@@ -11,7 +11,7 @@ This video demonstrates the complete trading lifecycle:
 - **Order Book**: Real-time updates
 - **Execution**: Atomic matching and settlement
 
-![End-to-End Demo](assets/demo/cantondex_demo_flow_1763577910427.webp)
+![End-to-End Demo](./assets/demo/cantondex_demo_flow_1763577910427.webp)
 
 ---
 
@@ -21,7 +21,7 @@ Live visualization of the order book with Price-Time Priority matching.
 - **Red**: Ask orders (Sell)
 - **Spread**: Calculated in real-time
 
-![Order Book Demo](assets/demo/order_book_demo_1763578840367.webp)
+![Order Book Demo](./assets/demo/order_book_demo_1763578840367.webp)
 
 ---
 
@@ -31,7 +31,7 @@ The platform is powered by a robust FastAPI backend with comprehensive documenta
 - **Security**: JWT & Canton Auth
 - **Database**: PostgreSQL with atomic transactions
 
-![Backend API Demo](assets/demo/backend_api_demo_1763578775105.webp)
+![Backend API Demo](./assets/demo/backend_api_demo_1763578775105.webp)
 
 ---
 
@@ -39,15 +39,15 @@ The platform is powered by a robust FastAPI backend with comprehensive documenta
 
 ### Trading Dashboard
 The main interface for institutional traders.
-![Dashboard](assets/demo/dashboard_price_check_1763580227768.png)
+![Dashboard](./assets/demo/dashboard_price_check_1763580227768.png)
 
 ### Login Screen
 Secure entry point supporting Passkey and Token authentication.
-![Login](assets/demo/login_page_ui_1763577758004.png)
+![Login](./assets/demo/login_page_ui_1763577758004.png)
 
 ### API Documentation
 Interactive Swagger UI for developers and integrators.
-![API Docs](assets/demo/swagger_ui_working_1763580201139.png)
+![API Docs](./assets/demo/swagger_ui_working_1763580201139.png)
 
 ---
 

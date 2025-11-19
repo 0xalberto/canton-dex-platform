@@ -23,23 +23,23 @@
 - **Code:** Verified logic in `OrderBook.tsx` and `main.py`.
 - **Visual Verification:**
   - Login Page UI (Inputs Visible):
-    ![Login Page UI](/login_page_ui_1763577758004.png)
+    ![Login Page UI](assets/demo/login_page_ui_1763577758004.png)
   - API Docs (Running):
-    ![API Docs](/api_docs_page_1763577766596.png)
+    ![API Docs](assets/demo/api_docs_page_1763577766596.png)
   - Browser Session:
-    ![Browser Session](/verify_ui_fixes_1763577745873.webp)
+    ![Browser Session](assets/demo/verify_ui_fixes_1763577745873.webp)
 
 ## Demo Video
 Here is the recorded demo flow showing Login, Dashboard, and Order Placement:
-![Demo Flow](/cantondex_demo_flow_1763577910427.webp)
+![Demo Flow](assets/demo/cantondex_demo_flow_1763577910427.webp)
 
 ### End State
-![Demo End State](/demo_end_state_1763578012328.png)
+![Demo End State](assets/demo/demo_end_state_1763578012328.png)
 
 ## Additional Demos
 
 ### Backend API Documentation
-![Backend API](/backend_api_demo_1763578775105.webp)
+![Backend API](assets/demo/backend_api_demo_1763578775105.webp)
 
 ### Order Book View
-![Order Book](/order_book_demo_1763578840367.webp)
+![Order Book](assets/demo/order_book_demo_1763578840367.webp)
