@@ -52,6 +52,21 @@ export const OrderBook: React.FC<OrderBookProps> = ({
   }
 
   if (error && !orderBook) {
+    // If 404, show empty order book state instead of error
+    if (error.includes('404') || error.includes('not found')) {
+      return (
+        <div className="glass-card h-full">
+          <h2 className="text-xl font-semibold mb-4">Order Book - {pair}</h2>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <p className="text-gray-400 text-lg mb-2">📊 Empty Order Book</p>
+              <p className="text-gray-500 text-sm mb-4">No orders available for {pair}</p>
+              <p className="text-gray-600 text-xs">Orders will appear here when traders place them</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="glass-card h-full">
         <h2 className="text-xl font-semibold mb-4">Order Book - {pair}</h2>
