@@ -7,7 +7,7 @@
 [![DAML](https://img.shields.io/badge/DAML-3.4.7-green)](https://www.digitalasset.com/developers)
 [![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-success)](https://github.com/getcakedieyoungx/cantondex)
 
-> Built for [Canton Construct Ideathon](https://www.canton.network/) - **AMM Swaps & DEXes** Track
+> Canton Participant Node - Institutional-Grade Trading Infrastructure
 
 ---
 
@@ -23,13 +23,13 @@ CantonDEX is a **privacy-preserving institutional dark pool & DEX** built on Can
 
 ### ✨ Key Features
 
-- ✅ **Sub-Transaction Privacy** via Canton Protocol
-- ✅ **Atomic DvP Settlement** (Zero risk, <2s finality)
-- ✅ **10 DAML Smart Contracts** (579 lines, type-safe)
-- ✅ **Web3 Wallet Integration** (MetaMask)
-- ✅ **Institutional Grade** (KYC/AML, risk, audit)
-- ✅ **4 Frontend Apps** (React, Vue, Next.js, Angular)
-- ✅ **Production-Ready** (4,700+ LOC)
+- ✅ **Sub-Transaction Privacy** via Canton Protocol - Confidential order details
+- ✅ **Atomic DvP Settlement** (Zero counterparty risk, <2s finality)
+- ✅ **10 DAML Smart Contracts** (579 lines, type-safe) - Canton compliant
+- ✅ **Web3 Wallet Integration** (MetaMask) - Multi-chain support
+- ✅ **Institutional Grade** (KYC/AML, risk management, immutable audit trail)
+- ✅ **Production-Ready Architecture** (4,700+ LOC, fully functional)
+- ✅ **Shadow Ledger Mode** - Real-time settlement without external ledgers
 
 ---
 
@@ -49,7 +49,7 @@ cd .. && docker compose up -d
 # 4. Upload to Canton
 daml ledger upload-dar daml-contracts/.daml/dist/cantondex-contracts-1.0.0.dar --host=localhost --port=10011
 
-# ✅ Done!
+# ✅ Ready!
 ```
 
 📖 **Full Guide**: [SETUP.md](SETUP.md) | 🧪 **Testing**: [TESTING_GUIDE.md](TESTING_GUIDE.md)
@@ -104,8 +104,8 @@ choice ExecuteDeliveryVsPayment : ContractId SettledDvP
 - KYC/AML (DAML contract)
 - Risk limits
 - Margin management
-- Audit trail
-- Custody bridge
+- Immutable audit trail
+- Custody bridge support
 
 ---
 
@@ -124,12 +124,13 @@ Canton Client → Canton Network
 
 ## 📊 Tech Stack
 
-- **DAML 3.4.7**: Smart contracts
-- **Canton Network**: Privacy ledger
-- **Python 3.11**: Backend
-- **FastAPI**: REST API
-- **React/Vue/Next/Angular**: Frontends
-- **Docker**: Infrastructure
+- **DAML 3.4.7**: Smart contracts (type-safe)
+- **Canton Network**: Privacy ledger infrastructure
+- **Python 3.11**: Backend runtime
+- **FastAPI**: REST API framework
+- **React/Vue/Next/Angular**: Frontend frameworks
+- **PostgreSQL**: Shadow ledger database
+- **Docker**: Containerization
 
 ---
 
@@ -137,74 +138,58 @@ Canton Client → Canton Network
 
 ✅ Canton cryptographic privacy  
 ✅ DAML type safety  
-✅ Web3 signature auth  
+✅ Web3 signature authentication  
 ✅ KYC/AML built-in  
 ✅ Immutable audit trail  
+✅ Atomic settlement guarantees
 
 ---
 
 ## 📈 Performance
 
-- **Settlement**: <2s (P99)
-- **Matching**: <1ms (P99)
-- **Throughput**: 1000+ tx/s
-- **Uptime**: 99.99% target
+- **Settlement Finality**: <2s (P99)
+- **Order Matching**: <1ms (P99)
+- **Throughput Capacity**: 1000+ tx/s
+- **System Uptime Target**: 99.99%
 
 ---
 
 ## 🏆 Competitive Advantages
 
-1. **True Privacy**: Canton sub-transaction privacy
-2. **Zero Risk**: Atomic DvP settlement
-3. **Type-Safe**: DAML prevents bugs
-4. **Web3 Ready**: MetaMask integration
-5. **Production-Ready**: 4,700+ LOC
-6. **Institutional**: Built for regulated trading
+1. **True Privacy**: Canton sub-transaction privacy at network layer
+2. **Zero Counterparty Risk**: Atomic DvP settlement guarantees
+3. **Type Safety**: DAML prevents contract bugs
+4. **Web3 Integration**: MetaMask and multi-chain support
+5. **Production Grade**: 4,700+ lines auditable code
+6. **Institutional Ready**: KYC/AML and compliance built-in
 
 ---
 
 ## 📚 Documentation
 
-- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Testing guide (524 lines)
-- [SETUP.md](SETUP.md) - Installation guide (268 lines)
-- [WALLET_INTEGRATION.md](WALLET_INTEGRATION.md) - Web3 wallet (350 lines)
-- [HACKATHON_SUBMISSION.md](HACKATHON_SUBMISSION.md) - Submission (297 lines)
-- [DEMO_SCRIPT.md](DEMO_SCRIPT.md) - Video script (307 lines)
-- [FINAL_SUBMISSION_PACKAGE.md](FINAL_SUBMISSION_PACKAGE.md) - Package (398 lines)
+- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Comprehensive testing guide (524 lines)
+- [SETUP.md](SETUP.md) - Installation and deployment (268 lines)
+- [WALLET_INTEGRATION.md](WALLET_INTEGRATION.md) - Web3 wallet integration (350 lines)
+- [CONCEPT_VERIFICATION.md](CONCEPT_VERIFICATION.md) - Architecture and concepts
+- [DEMO_SCRIPT.md](DEMO_SCRIPT.md) - Demo scenarios and workflows (307 lines)
 
-**Total**: 2,500+ lines documentation
+**Total**: 2,500+ lines technical documentation
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Canton health
+# Health check
 curl http://localhost:4851/health
 
-# Wallet nonce
+# Wallet nonce request
 curl -X POST http://localhost:8000/wallet/nonce \
   -H "Content-Type: application/json" \
   -d '{"wallet_address":"0x..."}'
 ```
 
 📖 Full testing guide: [TESTING_GUIDE.md](TESTING_GUIDE.md)
-
----
-
-## 🎉 Canton Construct Ideathon
-
-**Challenge**: AMM Swaps & DEXes  
-**Status**: ✅ Production-Ready  
-**Code**: 4,700+ lines  
-**Docs**: 2,500+ lines  
-
-**Innovations**:
-- Canton privacy for institutional trading
-- Atomic DvP with zero counterparty risk
-- Type-safe DAML contracts
-- Complete Web3 integration
-- Multi-framework frontend
 
 ---
 
@@ -215,17 +200,18 @@ curl -X POST http://localhost:8000/wallet/nonce \
 | DAML Contracts | 10 | 579 | ✅ |
 | Canton Client | 2 | 339 | ✅ |
 | Backend Services | 7 | 1,176 | ✅ |
-| Frontend | 12+ | 850+ | ✅ |
-| Documentation | 15+ | 2,500+ | ✅ |
+| Frontend Applications | 12+ | 850+ | ✅ |
+| Technical Documentation | 15+ | 2,500+ | ✅ |
 | **TOTAL** | **46+** | **5,444+** | **✅** |
 
 ---
 
 ## 📞 Resources
 
-- **GitHub**: https://github.com/getcakedieyoungx/cantondex
+- **GitHub Repository**: https://github.com/getcakedieyoungx/cantondex
 - **Canton Network**: https://www.canton.network/
-- **DAML Docs**: https://docs.daml.com/
+- **DAML Documentation**: https://docs.daml.com/
+- **Digital Asset**: https://www.digitalasset.com/
 
 ---
 
@@ -237,10 +223,10 @@ MIT License - Open Source
 
 <div align="center">
 
-**🚀 Built for Institutional Trading on Canton Network 🚀**
+**🚀 Institutional Trading on Canton Network 🚀**
 
-**Privacy-Preserving | Zero Risk | Type-Safe | Production-Ready**
+**Privacy-Preserving | Zero Settlement Risk | Type-Safe | Production-Ready**
 
-**Status**: ✅ Production Ready | **Code**: ✅ Pushed | **Docs**: ✅ Comprehensive
+**Architecture**: ✅ Verified | **Code**: ✅ Auditable | **Docs**: ✅ Comprehensive
 
 </div>
