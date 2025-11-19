@@ -165,7 +165,7 @@ Canton Client → Canton Network
 
 ## 📚 Documentation
 
-- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Testing for judges (524 lines)
+- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Testing guide (524 lines)
 - [SETUP.md](SETUP.md) - Installation guide (268 lines)
 - [WALLET_INTEGRATION.md](WALLET_INTEGRATION.md) - Web3 wallet (350 lines)
 - [HACKATHON_SUBMISSION.md](HACKATHON_SUBMISSION.md) - Submission (297 lines)

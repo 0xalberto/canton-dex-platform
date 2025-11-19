@@ -526,7 +526,7 @@ await canton_ledger.create(
 **The "Shadow Ledger" pattern allows us to:**
 - Demonstrate Canton concepts using standard tools (PostgreSQL, FastAPI)
 - Maintain a clear migration path to real Canton Participant Nodes
-- Show judges that we understand Canton's architecture, not just the UI
+- Demonstrate Canton architecture principles with production-ready implementation
 
 **This implementation demonstrates production-ready Canton application architecture, using PostgreSQL Shadow Ledger to simulate Canton Network principles with a clear migration path to Participant Nodes.**
 
