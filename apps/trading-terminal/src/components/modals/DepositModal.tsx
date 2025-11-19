@@ -22,7 +22,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
   useEffect(() => {
     const initAccount = async () => {
       if (!user?.partyId) return;
-      
+
       try {
         // Try to get existing account
         const account = await tradingAPI.getAccount(user.partyId);
@@ -63,9 +63,9 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
         asset,
         parseFloat(amount)
       );
-      
+
       console.log('Deposit successful:', result);
-      
+
       setSuccess(true);
       setTimeout(() => {
         onSuccess?.();
@@ -92,7 +92,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={handleClose}
       />
@@ -110,7 +110,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold gradient-text">Deposit Funds</h2>
-              <button 
+              <button
                 onClick={handleClose}
                 className="text-gray-400 hover:text-white transition-colors"
               >
@@ -135,7 +135,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
                 <select
                   value={asset}
                   onChange={(e) => setAsset(e.target.value)}
-                  className="input-modern"
+                  className="input-modern text-gray-900"
                   required
                 >
                   {assets.map((a) => (
@@ -154,7 +154,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
                   step="0.000001"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="input-modern"
+                  className="input-modern text-gray-900"
                   placeholder="0.00"
                   required
                   min="0"
@@ -186,7 +186,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
                     type="text"
                     value={`${asset}:${user?.partyId?.split('::')[2] || 'address'}`}
                     readOnly
-                    className="input-modern text-xs font-mono flex-1"
+                    className="input-modern text-xs font-mono flex-1 text-gray-900"
                   />
                   <button
                     type="button"

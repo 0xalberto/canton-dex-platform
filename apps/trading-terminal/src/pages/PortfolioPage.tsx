@@ -13,7 +13,7 @@ export default function PortfolioPage() {
 
   // Asset prices for display (in real app, fetch from market data API)
   const assetPrices: Record<string, number> = {
-    'BTC': 45234,
+    'BTC': 92500,
     'ETH': 2834,
     'SOL': 108.5,
     'USDT': 1,
@@ -23,7 +23,7 @@ export default function PortfolioPage() {
   // Load balances from API
   const loadBalances = async () => {
     if (!user?.partyId) return;
-    
+
     try {
       setLoading(true);
       const data = await tradingAPI.getBalances(user.partyId);
@@ -62,13 +62,13 @@ export default function PortfolioPage() {
           <p className="text-gray-400 mt-1">Real-time balances from Canton DEX</p>
         </div>
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={() => setDepositModalOpen(true)}
             className="btn bg-green-500/20 hover:bg-green-500/30 text-green-400"
           >
             <span className="mr-2">+</span> Deposit
           </button>
-          <button 
+          <button
             onClick={() => setWithdrawModalOpen(true)}
             className="btn bg-red-500/20 hover:bg-red-500/30 text-red-400"
           >
@@ -78,13 +78,13 @@ export default function PortfolioPage() {
       </div>
 
       {/* Modals */}
-      <DepositModal 
-        isOpen={depositModalOpen} 
+      <DepositModal
+        isOpen={depositModalOpen}
         onClose={() => setDepositModalOpen(false)}
         onSuccess={handleModalSuccess}
       />
-      <WithdrawModal 
-        isOpen={withdrawModalOpen} 
+      <WithdrawModal
+        isOpen={withdrawModalOpen}
         onClose={() => setWithdrawModalOpen(false)}
         onSuccess={handleModalSuccess}
       />
@@ -209,7 +209,7 @@ export default function PortfolioPage() {
           <div>
             <p className="font-semibold text-primary-light mb-2">Real-Time Data</p>
             <p className="text-sm text-gray-300">
-              Your balances are fetched directly from the PostgreSQL-backed trading service. 
+              Your balances are fetched directly from the PostgreSQL-backed trading service.
               All deposits, withdrawals, and trades are executed atomically using real database transactions.
             </p>
             <p className="text-xs text-gray-400 mt-2">

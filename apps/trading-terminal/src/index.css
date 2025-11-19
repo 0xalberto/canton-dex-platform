@@ -108,22 +108,6 @@ body::before {
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
 }
 
-.btn-secondary {
-  background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-}
-
-/* Input Styles */
-.input-modern {
-  @apply glass rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-500 bg-white/90;
-  outline: none;
-  transition: all 0.3s;
-}
-
-.input-modern:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-}
 
 /* Card Hover Effect */
 .card-3d {

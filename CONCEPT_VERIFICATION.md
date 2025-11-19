@@ -8,18 +8,6 @@
 
 ---
 
-## 📋 Executive Summary
-
-This report provides **hard evidence** (code snippets, database queries, schema analysis) proving that CantonDEX implements:
-
-1. ✅ **Atomic DvP Settlement** - All-or-nothing trade execution using PostgreSQL transactions
-2. ✅ **Sub-Transaction Privacy** - Party-based data isolation enforced at SQL query level
-3. ✅ **Canton Identity Model** - Party IDs following Canton naming convention (`canton::*::*`)
-4. ✅ **DAML Contract Alignment** - Schema mirrors DAML templates (TradingAccount, ConfidentialOrder, AtomicTrade)
-
-**Key Innovation:** We use PostgreSQL's ACID transactions to simulate Canton's atomic settlement guarantees, with a schema structure that directly maps to DAML contracts for seamless migration.
-
----
 
 ## 1. ✅ Atomic DvP (Delivery vs Payment) Verification
 
@@ -352,18 +340,6 @@ CREATE TABLE trading_accounts (
 
 ### Status: **VERIFIED** ✅
 
-### 💻 Code Evidence
-
-**File:** `cantondex-backend/database/schema.sql`  
-**Lines:** 1-350
-
-**DAML Contract Mapping:**
-
-| DAML Contract | PostgreSQL Table | Key Fields |
-|--------------|------------------|------------|
-| `TradingAccount` | `trading_accounts` | `party_id`, `custodian_party_id`, `account_status`, `contract_id`, `template_id = 'TradingAccount'` |
-| `ConfidentialOrder` | `orders` | `party_id`, `pair`, `side`, `quantity`, `price`, `is_confidential`, `contract_id`, `template_id = 'ConfidentialOrder'` |
-| `AtomicTrade` | `trades` | `maker_party_id`, `taker_party_id`, `pair`, `quantity`, `price`, `settlement_status`, `is_atomic`, `contract_id`, `template_id = 'AtomicTrade'` |
 
 **Schema Snippet:**
 ```sql

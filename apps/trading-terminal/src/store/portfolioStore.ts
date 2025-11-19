@@ -25,7 +25,7 @@ interface PortfolioState {
   assets: Record<string, Asset>;
   transactions: Transaction[];
   totalValue: number;
-  
+
   // Actions
   deposit: (asset: string, amount: number) => void;
   withdraw: (asset: string, amount: number) => void;
@@ -35,48 +35,48 @@ interface PortfolioState {
 }
 
 const initialAssets: Record<string, Asset> = {
-  'BTC': { 
-    symbol: 'BTC', 
-    name: 'Bitcoin', 
-    balance: '0.5', 
-    value: '$22,617', 
-    change: '+12.5%', 
+  'BTC': {
+    symbol: 'BTC',
+    name: 'Bitcoin',
+    balance: '0.5',
+    value: '$22,617',
+    change: '+12.5%',
     trend: 'up',
-    price: 45234
+    price: 92500
   },
-  'ETH': { 
-    symbol: 'ETH', 
-    name: 'Ethereum', 
-    balance: '2.0', 
-    value: '$5,668', 
-    change: '+8.3%', 
+  'ETH': {
+    symbol: 'ETH',
+    name: 'Ethereum',
+    balance: '2.0',
+    value: '$5,668',
+    change: '+8.3%',
     trend: 'up',
     price: 2834
   },
-  'SOL': { 
-    symbol: 'SOL', 
-    name: 'Solana', 
-    balance: '10', 
-    value: '$1,085', 
-    change: '-3.2%', 
+  'SOL': {
+    symbol: 'SOL',
+    name: 'Solana',
+    balance: '10',
+    value: '$1,085',
+    change: '-3.2%',
     trend: 'down',
     price: 108.5
   },
-  'USDT': { 
-    symbol: 'USDT', 
-    name: 'Tether', 
-    balance: '5000', 
-    value: '$5,000', 
-    change: '0%', 
+  'USDT': {
+    symbol: 'USDT',
+    name: 'Tether',
+    balance: '5000',
+    value: '$5,000',
+    change: '0%',
     trend: 'neutral',
     price: 1
   },
-  'tTBILL': { 
-    symbol: 'tTBILL', 
-    name: 'Tokenized T-Bill', 
-    balance: '0', 
-    value: '$0', 
-    change: '0%', 
+  'tTBILL': {
+    symbol: 'tTBILL',
+    name: 'Tokenized T-Bill',
+    balance: '0',
+    value: '$0',
+    change: '0%',
     trend: 'neutral',
     price: 10000
   }
@@ -92,7 +92,7 @@ export const usePortfolioStore = create<PortfolioState>()(
       deposit: (asset: string, amount: number) => {
         const assets = get().assets;
         const currentAsset = assets[asset];
-        
+
         if (!currentAsset) return;
 
         const currentBalance = parseFloat(currentAsset.balance.replace(',', ''));
@@ -123,11 +123,11 @@ export const usePortfolioStore = create<PortfolioState>()(
       withdraw: (asset: string, amount: number) => {
         const assets = get().assets;
         const currentAsset = assets[asset];
-        
+
         if (!currentAsset) return;
 
         const currentBalance = parseFloat(currentAsset.balance.replace(',', ''));
-        
+
         if (currentBalance < amount) {
           console.error('Insufficient balance');
           return;
@@ -160,7 +160,7 @@ export const usePortfolioStore = create<PortfolioState>()(
       updateBalance: (asset: string, newBalance: number) => {
         const assets = get().assets;
         const currentAsset = assets[asset];
-        
+
         if (!currentAsset) return;
 
         const newValue = newBalance * currentAsset.price;

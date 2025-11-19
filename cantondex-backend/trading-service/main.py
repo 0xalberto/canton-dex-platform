@@ -1,3 +1,30 @@
+"""
+CantonDEX Trading Service
+Main trading engine with order matching and settlement
+"""
+
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+import uvicorn
+from decimal import Decimal
+import uuid
+from typing import List, Optional
+
+# Local imports
+from database import get_db, get_db_pool, db_pool
+from matching_engine import MatchingEngine
+from models import (
+    CreateOrderRequest, OrderResponse,
+    BalanceResponse, AccountResponse,
+    CreateAccountRequest, DepositRequest,
+    WithdrawRequest, TransactionResponse
+)
+
+# Initialize matching engine
+matching_engine = MatchingEngine()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
@@ -83,3 +110,50 @@ async def lifespan(app: FastAPI):
     matching_engine.stop()
     if db_pool:
         await db_pool.close()
+
+
+# Create FastAPI app
+app = FastAPI(
+    title="CantonDEX Trading Service",
+    description="Order matching and settlement engine",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "service": "CantonDEX Trading Service",
+        "version": "1.0.0",
+        "status": "operational"
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "service": "trading-service",
+        "matching_engine": "running" if matching_engine.is_running else "stopped"
+    }
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )

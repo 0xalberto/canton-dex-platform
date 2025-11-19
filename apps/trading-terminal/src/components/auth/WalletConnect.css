@@ -102,6 +102,10 @@
   border-radius: 8px;
   font-size: 0.875rem;
   transition: border-color 0.2s;
+  color: #1a202c;
+  /* Dark text */
+  background-color: #ffffff;
+  /* White background */
 }
 
 .form-group input:focus,
