@@ -92,9 +92,9 @@ export const WalletConnect: React.FC = () => {
   return (
     <div className="wallet-connect-container">
       <div className="wallet-connect-header">
-        <h2>Connect to Canton Network</h2>
+        <h2>Connect Participant Node</h2>
         <p className="subtitle">
-          Canton uses Passkey/WebAuthn for secure, passwordless authentication
+          Authenticate with your Canton Party Identity using Passkey, Email, or Token
         </p>
       </div>
 

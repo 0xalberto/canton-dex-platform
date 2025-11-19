@@ -165,7 +165,7 @@ class MatchingEngine:
             
             # Calculate amounts
             base_amount = quantity  # e.g., 1.5 BTC
-            quote_amount = quantity * price  # e.g., 1.5 * 45000 = 67500 USDT
+            quote_amount = quantity * price  # e.g., 1.5 * 92500 = 138750 USDT
             
             # Transfer assets (maker side - selling base, receiving quote)
             await self._transfer_assets(

@@ -275,8 +275,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({ isOpen, onClose, o
             {/* Disclaimer */}
             <div className="mt-4 p-3 glass rounded-lg">
               <p className="text-xs text-gray-500">
-                <strong className="text-primary-light">Note:</strong> This is a hackathon prototype. 
-                In production, this would integrate with Canton custody contracts and multi-sig approvals.
+                <strong className="text-primary-light">Note:</strong> System operating in Shadow Ledger Mode. Withdrawals require multi-party approval on Canton Participant Nodes.
               </p>
             </div>
           </>

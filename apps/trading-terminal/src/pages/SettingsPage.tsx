@@ -8,7 +8,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="glass-card">
-          <h3 className="text-lg font-semibold mb-4">Profile</h3>
+          <h3 className="text-lg font-semibold mb-4">Party Identity Management</h3>
           <div className="space-y-4">
             <div>
               <label className="block text-sm text-gray-400 mb-2">Full Name</label>

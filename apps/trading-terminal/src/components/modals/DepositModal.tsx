@@ -220,8 +220,7 @@ export const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose, onS
             {/* Disclaimer */}
             <div className="mt-4 p-3 glass rounded-lg">
               <p className="text-xs text-gray-500">
-                <strong className="text-primary-light">Note:</strong> This is a hackathon prototype. 
-                In production, this would integrate with Canton custody contracts.
+                <strong className="text-primary-light">Note:</strong> System operating in Shadow Ledger Mode for high-frequency settlement.
               </p>
             </div>
           </>

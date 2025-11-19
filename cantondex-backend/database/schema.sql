@@ -267,12 +267,12 @@ INSERT INTO parties (party_id, display_name, email, status) VALUES
     ('canton::system::operator', 'System Operator', 'system@cantondex.io', 'ACTIVE')
 ON CONFLICT (party_id) DO NOTHING;
 
--- Create supported trading pairs in market_data
-INSERT INTO market_data (pair, last_price, best_bid, best_ask, high_24h, low_24h, volume_24h) VALUES
-    ('BTC/USDT', 45234.00, 45230.00, 45235.00, 45500.00, 44800.00, 1250000.00),
-    ('ETH/USDT', 2834.50, 2833.00, 2835.00, 2850.00, 2800.00, 850000.00),
-    ('SOL/USDT', 108.50, 108.45, 108.55, 110.00, 107.00, 125000.00),
-    ('tTBILL/USDT', 10000.00, 9998.00, 10002.00, 10010.00, 9990.00, 50000.00)
+    -- Create supported trading pairs in market_data
+    INSERT INTO market_data (pair, last_price, best_bid, best_ask, high_24h, low_24h, volume_24h) VALUES
+        ('BTC/USDT', 92500.00, 92450.00, 92550.00, 92800.00, 92000.00, 1250000.00),
+        ('ETH/USDT', 3200.00, 3195.00, 3205.00, 3250.00, 3180.00, 850000.00),
+        ('SOL/USDT', 108.50, 108.45, 108.55, 110.00, 107.00, 125000.00),
+        ('tTBILL/USDT', 10000.00, 9998.00, 10002.00, 10010.00, 9990.00, 50000.00)
 ON CONFLICT (pair) DO NOTHING;
 
 -- ============================================
