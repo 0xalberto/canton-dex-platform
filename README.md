@@ -14,7 +14,7 @@ CantonDEX is a **privacy-preserving institutional dark pool & DEX** built on Can
 
 ---
 
-## 🚀 Quick Start
+## How to start
 
 ```bash
 # 1. Clone
