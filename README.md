@@ -29,4 +29,3 @@ cd .. && docker compose up -d
 
 # 4. Upload to Canton
 daml ledger upload-dar daml-contracts/.daml/dist/cantondex-contracts-1.0.0.dar --host=localhost --port=10011
-
