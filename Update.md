@@ -14,4 +14,7 @@
 # Version 1.1
 
 - Multi Target Address
-- Trade Sec From Resolve (Exit Time)
+- Fix type error
+- Basic UI Implementation
+- - User Activity
+- - Holding Asset Track
