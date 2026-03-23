@@ -1,6 +1,6 @@
 import type { ClobClient } from "@polymarket/clob-client";
 import { OrderType, Side } from "@polymarket/clob-client";
-import { Big } from "big-decimal-ts";
+import { Big } from "ts-big-lib";
 import type { AppConfig } from "../types";
 import { DATA_API, EXIT_INTERVAL_MS, POSITIONS_MAX_OFFSET, POSITIONS_PAGE_SIZE } from "../constant";
 

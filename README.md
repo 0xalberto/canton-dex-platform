@@ -2,7 +2,7 @@
 
 Polymarket Copytrading Bot which copies trades from one or more leader addresses on Polymarket. Config in `trade.toml`, secrets in `.env`.
 
-## Journey of Builder - [xstacks](https://t.me/x_stacks)
+## Journey of Builder - [soladity](https://t.me/soladity)
 
 While many traders focus heavily on crypto prediction markets, I noticed that they can be extremely volatile and unpredictable in short timeframes. Rapid price swings, aggressive position flipping, and sudden liquidity shifts make consistent automation difficult.
 
@@ -30,8 +30,8 @@ Adjust filters like entry_trade_sec, trade_sec_from_resolve, take_profit, and bu
 ## Setup
 
 ```bash
-git clone https://github.com/dev-protocol/polymarket-copytrading-bot-sport.git
-cd polymarket-copytrading-bot-sport
+git clone https://github.com/G3-DEV-AGENCY/polymarket-copy-trading-bot.git
+cd polymarket-copy-trading-bot
 npm install
 # Edit .env: WALLET_PRIVATE_KEY, PROXY_WALLET_ADDRESS (if Magic), SIGNATURE_TYPE
 cd frontend
@@ -49,7 +49,7 @@ The architecture is designed for speed, efficiency, and scalability, making it s
 
 <img width="1884" height="617" alt="image" src="https://github.com/user-attachments/assets/900d2bb1-de25-4d4c-a94d-7f083990e145" />
 
-TG: [xstacks](https://t.me/x_stacks)
+TG: [soladity](https://t.me/soladity)
 
 ## Run
 
