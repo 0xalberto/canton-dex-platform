@@ -4,18 +4,23 @@ Polymarket Copytrading Bot which copies trades from one or more leader addresses
 
 ## Journey of Builder - [soladity](https://t.me/soladity)
 
-While many traders focus heavily on crypto prediction markets, I noticed that they can be extremely volatile and unpredictable in short timeframes. Rapid price swings, aggressive position flipping, and sudden liquidity shifts make consistent automation difficult.
+At first glance, prediction markets—especially in crypto—seem like the perfect playground for automation. But the deeper I looked, the clearer the reality became: short-term movements are often chaotic. Prices swing aggressively, positions flip within seconds, and liquidity can disappear just as quickly as it appears. Building something consistent in that environment isn’t easy.
 
-When I started looking at Polymarket, I noticed one thing right away: markets can be unpredictable. Crypto markets, in particular, move fast—prices swing, positions flip, and liquidity can change in an instant, making consistent automation really tricky.
+When I started exploring Polymarket, that unpredictability stood out immediately. Crypto markets move fast, but even beyond crypto, every category has its own dynamics. Trying to rely on a single market type felt limiting—and fragile.
 
-Instead of limiting the bot to one type of market, I decided to build a system that could copy trades across all kinds of markets—Politics, Sports, Crypto, Economic events, and more. The idea was simple: follow experienced traders, act quickly, and stay flexible, no matter what market they’re in.
+So instead of narrowing the scope, I went in the opposite direction.
 
-I started development in early February 2026, spending a couple of weeks testing, refining filters, timing logic, and position sizes. Running simulations on historical data and testing with a small live balance showed promising results: steady, consistent gains without chasing extreme volatility.
+I designed a system that could operate across all market categories—Politics, Sports, Crypto, macroeconomic events—anything available. The core idea was simple but powerful: identify experienced traders, follow their moves in real time, and stay adaptable regardless of the market conditions.
 
-The strategy isn’t about explosive wins. It’s about disciplined copy trading, spreading risk across multiple markets, and aiming for smooth, reliable performance. By following multiple leaders and diversifying trades, the bot can handle fast-moving markets like sports and crypto while still keeping long-term events, like politics and macroeconomics, in play.
+Development began in early February 2026. Over the following weeks, I focused on refining the fundamentals—filtering which traders to follow, optimizing execution timing, and calibrating position sizing. I ran simulations on historical data and tested the system with a small live balance. The early results were encouraging: not explosive gains, but consistent, controlled growth.
 
-In short, it’s a long-term, flexible system built for steady growth, smart risk control, and automated trading across the full spectrum of Polymarket.
-This is a long-term strategy — built around discipline, diversification, and steady growth rather than hype.
+That became the philosophy behind the system.
+
+This isn’t about chasing volatility or trying to time every spike. It’s about disciplined copy trading, spreading exposure across different markets, and maintaining stability in unpredictable conditions. By following multiple high-performing traders and diversifying across categories, the system can adapt—whether it’s reacting to fast-paced sports and crypto markets or holding positions in longer-term political and economic events.
+
+In the end, the goal is simple: build a resilient, long-term trading system. One that prioritizes risk management, consistency, and flexibility over hype.
+
+A system designed not for quick wins—but for steady, sustainable growth. 🚀
 
 # Market Types
 
